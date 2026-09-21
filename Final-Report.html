@@ -1,0 +1,3772 @@
+<html>
+	<head>
+		<title>Final Report | Coquette's Database Design</title>
+		<meta name="description" content="ISE 311, Information Technologies, Final Report of Term Project">
+		<meta name="keywords" content="database design">
+		<meta name="author" content="Batuhan Ok, Mustafa Emre Beyhan, Açelya Sıla Muhçi, Arda Çiçek">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style type="text/css">
+		body{font-family: Arial; background-image: linear-gradient(to right, #ffefba, #ffffff); text-align: justify}
+		ul{list-style-type: disc; margin: 25}
+		h1, h2, h3, h4,h5{text-align: center; text-transform: uppercase}
+		h1{color: red; font-size: 23pt}
+		h2{color: #dd4124}
+		h3{color: blue}
+		h5{color: red}
+		#head{color: #2d545e; text-align: center}
+		#content{text-align: center; color: #4682B4}
+		.a{font-family: Arial, Helvetica, sans-serif; border-collapse: collapse; width: 100%}
+		.a td, #customers th {border: 1px solid #ddd; padding: 8px}
+		.a tr:nth-child(even){background-color: #f2f2f2}
+		.a tr:hover {background-color: #ddd}
+		.a th{padding-top: 12px;  padding-bottom: 12px; text-align: left; background-color: #04AA6D; color: white; border: 1px solid}
+		.b{font-family: Arial, Helvetica, sans-serif; border-collapse: collapse; width: 100%}
+		.b td, #customers th {border: 1px solid #ddd; padding: 8px}
+		.b tr:nth-child(even){background-color: #f2f2f2}
+		.b tr:hover {background-color: #ddd}
+		.b th{padding-top: 12px;  padding-bottom: 12px; text-align: left; background-color: #9A5AFF; color: white; border: 1px solid}
+		.c{font-family: Arial, Helvetica, sans-serif; border-collapse: collapse; width: 100%}
+		.c td, #customers th {border: 1px solid #ddd; padding: 8px}
+		.c tr:nth-child(even){background-color: #f2f2f2}
+		.c tr:hover {background-color: #ddd}
+		.c th{padding-top: 12px;  padding-bottom: 12px; text-align: left; background-color: #ff487e; color: white; border: 1px solid}
+		.k{font-weight: bold}
+		ol{list-style-type: number}
+		ol ol{list-style-type: lower-roman}
+		</style>
+	</head>
+	<body>
+	<a id=top></a>
+	<h1>Coquette's Database Design</h1>
+	<h2 id=content>Table of Contents</h2>
+	<div style="text-align: center;">
+		<div style="display: inline-block; text-align: left;">
+			<ol>
+				<li><a href=#problem>PROBLEM DEFINITION</a></li>
+				<li><a href=#design>DESIGN</a></li>
+					<ol>
+						<li><a href=#erdiag>E/R DIAGRAM</a></li>
+						<li><a href=#tablestr>TABLE STRUCTURES</a></li>
+					</ol>
+				<li><a href=#imp>IMPLEMENTATION</a>
+					<ol>
+						<li><a href=#sqlcodes>CODES FOR CREATING TABLES ON SQL</a></li>
+						<li><a href=#sqltables>TABLES WITH HTML & CSS</a></li>
+						<li><a href=#questions>QUERY QUESTIONS AND ANSWERS & OUTPUTS AS HTML TABLES</a></li>
+					</ol>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<h2><a id=problem>Problem Definition</a></h2>
+	<p style="text-indent: 2em">
+	<span style="font-weight: bold">Coquette</span> is a chic clothing brand which experiences database design problem. Their current system, while functional, is <span style="text-decoration: underline">struggles to handle the growing complexity of their operations</span>. This makes it difficult to track inventory, identify customer trends and optimize workflows.
+	</p>
+	
+	<p style="text-indent: 2em">
+	The biggest issue lies in <span style="text-decoration: underline">the lack of data integration</span>. Customer orders are scattered across different platforms, making it challenging to analyze buying patterns and personalize marketing campaigns. Similarly, product information like stock levels and supplier details are often isolated within specific product categories or vendor systems. This makes it difficult for different departments to collaborate on inventory management, leading to inaccurate stock counts and missed purchasing opportunities. This siloed approach also hampers communication and hinders efficient workflows. This disjoint data also hampers employee performance, as they face cumbersome processes and a lack of real-time information.
+	</p>
+	
+	<p style="text-indent: 2em">
+	Coquette has decided to store information about its customers, stores, employees, products, orders, manufacturers and campaigns in a database. The company has wisely chosen to hire us (Batuhan Ok, Mustafa Emre Beyhan, Açelya Sıla Muhçi, and Arda Çiçek) as database designers. The following information describes the situation that the Coquette database must model:
+	</p>
+	<ul>
+		<li>
+			<p>
+			Customers are identified by an ID, and have their names, gender, e-mail, phone number, birth date, and addresses must be recorded. Addresses may have more than one value (multi valued). 
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each of Coquette's stores are identified by an ID, and have a location, region, manager, store target, and store sales.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Employees are identified by an ID and a phone number. For each employee, the name, age, title, hire date, employee target, and employee sales must be recorded. In addition, each unique phone number is composed three attributes as area code, number, and extension.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each product is identified by an ID, and has a category, style, color, price, available quantity, and size.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each order received by Coquette is identified by an order number, and has a order date, order quantity, order price, order status, shipping address, and payment method.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each manufacturer of Coquette stores is identified by an ID and has a name and contact person. Additionally, each contact person has an e-mail and phone number.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each campaign is identified by ID and has a name, start date, end date, and available amount.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each customer may use several campaigns, and a given campaign may be used by several customers. Some campaigns may not have customers and some customers may not use the campaigns.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each customer may place several orders, and a given order must be placed by a customer. Every customer must has a order, and vice versa.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each employee must works for a store, and a given store may be employs several employee. Every employee must has a store, and vice versa. Additionally, each manager must manages a store, and a given store managed by a manager. Every store must be managed by a employee(manager).
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each supervisor (a employee) may supervise several employees, and each employee must be supervised by a supervisor. Every supervisor must supervises an employee.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each order must belong to a store, and a store may include several orders. Every order must has a store.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each order must include a product, and a product may include several orders. Every order must has a product.
+			</p>
+		</li>
+		
+		<li>
+			<p>
+			Each manufacturer may manufacture several products, and a product must be manufactured by a manufacturer. Every product must has a manufacturer, and vice versa.
+			</p>
+		</li>
+	</ul>
+	<h5><a href=#top>GO BACK TO THE TOP</a></h5>
+	<h2><a id=design>Design</a></h2>
+	<img style="text-align: center; width: 100%" src="ER-Diagram.jpg" id=erdiag>
+	<h5><a href=#top>GO BACK TO THE TOP</a></h5>
+	
+	<h3 id=tablestr>CUSTOMERS</h3>
+	<table class=c>
+		<tr>
+			<th>CUST_ID</th>
+			<th>CUST_NAME</th>
+			<th>CUST_GENDER</th>
+			<th>CUST_MAIL</th>
+			<th>CUST_PHONE</th>
+			<th>CUST_BIRTHDATE</th>
+			<th>CUST_ADDRESS</th>
+		</tr>
+	</table>
+	<hr><br>
+	<h3>STORES</h3>
+	<table class=c>
+		<tr>
+			<th>STORE_ID</th>
+			<th>LOCATION</th>
+			<th>REGION</th>
+			<th>MANAGER</th>
+			<th>STORE_TARGET</th>
+			<th>STORE_SALES</th>
+		</tr>
+	</table>
+	<hr><br>
+	<h3>EMPLOYEES</h3>
+	<table class=c>
+		<tr>
+			<th>EMP_ID</th>
+			<th>FL_NAME</th>
+			<th>AGE</th>
+			<th>STORE</th>
+			<th>TITLE</th>
+			<th>PHONE_AREA</th>
+			<th>PHONE_NUM</th>
+			<th>PHONE_EXT</th>
+			<th>HIRE_DATE</th>
+			<th>SUPERVISOR</th>
+			<th>EMP_TARGET</th>
+			<th>EMP_SALES</th>
+		</tr>
+	</table>
+	<hr><br>
+	<h3>PRODUCTS</h3>
+	<table class=c>
+		<tr>
+			<th>MAN_ID</th>
+			<th>PROD_ID</th>
+			<th>CATEGORY</th>
+			<th>STYLE</th>
+			<th>COLOR</th>
+			<th>SIZE</th>
+			<th>PRICE</th>
+			<th>AV_QUANT</th>
+		</tr>
+	</table>
+	<hr><br>
+	<h3>ORDERS</h3>
+	<table class=c>
+		<tr>
+			<th>ORDER_NUM</th>
+			<th>ORDER_DATE</th>
+			<th>CUST_NUM</th>
+			<th>ORD_STORE</th>
+			<th>MAN</th>
+			<th>PROD</th>
+			<th>QUANT</th>
+			<th>ORD_PRICE</th>
+			<th>ORDER_STATUS</th>
+			<th>SHIP_ADDR</th>
+			<th>PAYMENT_METHOD</th>
+		</tr>
+	</table>
+	<hr><br>
+	<h3>MANUFACTURERS</h3>
+	<table class=c>
+		<tr>
+			<th>MANUF</th>
+			<th>MAN_NAME</th>
+			<th>CONT_PERSON</th>
+			<th>CONT_PERSON_MAIL</th>
+			<th>CONT_PERSON_PHONE</th>
+		</tr>
+	</table>
+	<hr><br>
+	<h3>CAMPAIGNS</h3>
+	<table class=c>
+		<tr>
+			<th>CAMP_ID</th>
+			<th>CAMP_NAME</th>
+			<th>CUST_NUMBER</th>
+			<th>START_DATE</th>
+			<th>END_DATE</th>
+			<th>AV_PRICE</th>
+		</tr>
+	</table>
+	<hr>
+	<h5><a href=#top>GO BACK TO THE TOP</a></h5><br>
+	<h2><a id=imp>Implementation</a></h2>
+	<h3 id=head><a id=sqlcodes>Codes for creating tables on SQL</a></h3>
+	<p style="text-indent:5em">CREATE TABLE CUSTOMERS(</p>
+	<div style="text-indent:7em">
+		<p>CUST_ID INTEGER NOT NULL,</p>
+		<p>CUST_NAME VARCHAR(50) NOT NULL,</p>
+		<p>CUST_GENDER CHAR(1) NOT NULL,</p>
+		<p>CUST_MAIL VARCHAR(50) NOT NULL,</p>
+		<p>CUST_PHONE CHAR(12) NOT NULL,</p>
+		<p>CUST_BIRTHDATE SMALLDATETIME NOT NULL,</p>
+		<p>CUST_ADDRESS VARCHAR(100) NOT NULL,</p>
+		<p>PRIMARY KEY (CUST_ID))</p>
+	</div>
+	<br>
+	<p style="text-indent:5em">INSERT INTO CUSTOMERS</p>
+	<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+		<p>(10001,'Todd McBride','M','todd.mcbride@gmail.com','201-701-3460','1998-05-29','1714 Desert Broom Court, Newark, New Jersey 07102'),</p>
+		<p>(10002,'Robbie Washburn','F','robbie.washburn@icloud.com','240-216-0574','1999-11-20','3953 Village View Drive, Sturtevant, Wisconsin 53177'),</p>
+		<p>(10003,'Tomas Brady','M','tomas.brady@yahoo.com','316-794-9272','1979-04-13','4285 Henery Street, Wibaux, Montana 59353'),</p>
+		<p>(10004,'Ida Hunt','F','ida.hunt@gmail.com','814-794-1938','1980-09-01','3106 Spadafore Drive, Altoona, Pennsylvania 16601'),</p>
+		<p>(10005,'Lee Lyons','M','lee.lyons@outlook.com','678-895-0352','1987-06-28','2362 Mount Olive Road, Roswell, Georgia 30076'),</p>
+		<p>(10006,'Sheryl Crawford','F','sheryl.crawford@icloud.com','951-698-2455','1974-09-09','907 Brown Bear Drive, Murrieta, California 92562'),</p>
+		<p>(10007,'Steven Willson','M','steven.willson@gmail.com','208-772-1359','2000-10-18','601 Seltice Way, Hayden Lake, Idaho 83835'),</p>
+		<p>(10008,'Lydia Eddy','F','lydia.eddy@protonmail.com','229-881-4743','1998-03-09','2158 Locust Street, Albany, Georgia 31707'),</p>
+		<p>(10009,'Neil Meyers','M','neil.meyers@yahoo.com','978-615-7770','1974-01-13','1421 Huntz Lane, San Francisco, California 94107'),</p>
+		<p>(10010,'Carole Cotton','F','carole.cotton@gmail.com','832-376-3466','1984-04-01','1341 Wines Lane, Houston, Texas 77027'),</p>
+		<p>(10011,'Taylor Duffy','M','taylor.duffy@outlook.com','309-479-3012','1993-04-18','3537 Trainer Avenue, Castleton, Illinois 61426'),</p>
+		<p>(10012,'Emma Costa','F','emma.costa@icloud.com','903-209-6181','1984-10-10','416 Gladwell Street, Sherman, Texas 75090'),</p>
+		<p>(10013,'Howard Ewing','M','howard.ewing@gmail.com','816-329-7880','1980-11-05','1444 Traders Alley, Kansas City, Missouri 64106'),</p>
+		<p>(10014,'Lou Brock','F','lou.brock@yahoo.com','260-241-1737','2000-10-16','4757 New Creek Road, Williamsburg, Missouri 63388'),</p>
+		<p>(10015,'Patrick Holder','M','patrick.holder@gmail.com','727-564-2943','1979-12-28','3214 Maryland Avenue, Feather Sound, Florida 34622'),</p>
+		<p>(10016,'Sonya Ayers','F','sonya.ayers@icloud.com','616-799-8436','1983-07-20','2396 West Street, Blissfield, Ohio 43805'),</p>
+		<p>(10017,'Christopher Griffin','M','christopher.griffin@yahoo.com','803-643-4896','2001-02-18','11 Java Lane, Aiken, South Carolina 29801'),</p>
+		<p>(10018,'Blanca Wallace','F','blanca.wallace@gmail.com','641-338-9911','1979-07-06','3646 Southern Avenue, Thayer, Iowa 50254'),</p>
+		<p>(10019,'Ignacio Murray','M','ignacio.murray@outlook.com','732-380-6734','1989-05-29','3593 Pennsylvania Avenue, Harrisburg, Pennsylvania 17108'),</p>
+		<p>(10020,'Taylor Cassidy','F','taylor.cassidy@icloud.com','315-835-8415','1984-05-27','3109 Saint Marys Avenue, Syracuse, New York 13202'),</p>
+		<p>(10021,'Erick Daugherty','M','erick.daugherty@gmail.com','617-561-8261','1990-10-02','64799 Cedar Lane, Brookline, Massachusetts 02146'),</p>
+		<p>(10022,'Evelyn Choi','F','evelyn.choi@protonmail.com','517-607-4261','1984-09-01','2 Haven Lane, Hillsdale, Michigan 49242'),</p>
+		<p>(10023,'Matthew Stark','M','matthew.stark@yahoo.com','719-260-2205','1995-07-13','4019 Clover Drive, Colorado Springs, Colorado 80918'),</p>
+		<p>(10024,'Claire Barr','F','claire.barr@gmail.com','765-645-7725','1976-05-30','444 Winifred Way, Charlotte, North Carolina 28212'),</p>
+		<p>(10025,'Daryl Wilcox','M','daryl.wilcox@icloud.com','804-317-9951','1980-09-22','1048 Coulter Lane, Richmond, Virginia 23222'),</p>
+		<p>(10026,'Guadalupe Bates','F','guadalupe.bates@gmail.com','713-491-1934','1992-05-22','647 Monroe Street, Houston, Texas 77016'),</p>
+		<p>(10027,'Felipe Case','M','felipe.case@yahoo.com','214-584-8128','1994-04-09','2436 Romines Mill Road, Coldwater, Ohio 45828'),</p>
+		<p>(10028,'Eunice Mead','F','eunice.mead@outlook.com','253-691-7626','1995-11-26','3962 Dale Avenue, Tacoma, Washington 98402'),</p>
+		<p>(10029,'Wade Johnston','M','wade.johnston@gmail.com','740-595-8926','1982-03-30','1062 Jessie Street, Radnor, Ohio 43066'),</p>
+		<p>(10030,'Tiffany Shafer','F','tiffany.shafer@icloud.com','541-304-3755','1982-03-22','2193 New Street, Portland, Oregon 97205'),</p>
+		<p>(10031,'Theodore Shannon','M','theodore.shannon@yahoo.com','410-453-1671','1992-06-13','615 Columbia Boulevard, Charlotte, North Carolina 28290'),</p>
+		<p>(10032,'Kerry McCoy','F','kerry.mccoy@gmail.com','910-471-3412','2000-07-13','2155 Twin Willow Lane, Wilmington, North Carolina 28405'),</p>
+		<p>(10033,'Kent Young','M','kent.young@outlook.com','314-613-1988','1986-02-02','1639 Blane Street, Saint Louis, Missouri 63101'),</p>
+		<p>(10034,'Robin Friedman','F','robin.friedman@yahoo.com','305-360-9661','1982-05-14','903 Tyler Avenue, Pompano Beach, Florida 33064'),</p>
+		<p>(10035,'Thomas Fuentes','M','thomas.fuentes@gmail.com','864-261-5951','1974-08-29','2356 Mill Street, Anderson, South Carolina 29621'),</p>
+		<p>(10036,'Rosario Austin','F','rosario.austin@icloud.com','757-598-4080','1997-10-15','2983 Allison Avenue, Portsmouth, Virginia 23707'),</p>
+		<p>(10037,'Harold Funk','M','harold.funk@yahoo.com','781-234-6098','2000-06-30','4968 Wescam Court, Boston, Massachusetts 02110'),</p>
+		<p>(10038,'Vicky Drew','F','vicky.drew@gmail.com','601-537-9679','1979-07-02','1984 Lena Lane, Polkville, Mississippi 39117'),</p>
+		<p>(10039,'Roger Watts','M','roger.watts@outlook.com','508-438-8849','1993-01-01','1948 Ferguson Street, Springfield, Massachusetts 01109'),</p>
+		<p>(10040,'Sandi Patton','F','sandi.patton@yahoo.com','248-210-7837','1976-07-15','1635 Bobcat Drive, Detroit, Michigan 48226'),</p>
+		<p>(10041,'Louis Chang','M','louis.chang@gmail.com','309-354-8512','1980-12-17','3229 Coburn Hollow Road, Tuba City, Arizona 86045'),</p>
+		<p>(10042,'Andrea Estrada','F','andrea.estrada@icloud.com','724-868-6519','1982-06-04','1009 Spruce Drive, Newark, Missouri 63458'),</p>
+		<p>(10043,'Ali Shaffer','M','ali.shaffer@yahoo.com','515-378-3767','1973-03-13','881 Hazelwood Avenue, Thor, Iowa 50591'),</p>
+		<p>(10044,'Jeanne Richardson','F','jeanne.richardson@gmail.com','337-596-3010','1985-08-06','2438 Bridge Avenue, Tampa, Florida 33625'),</p>
+		<p>(10045,'Hugh Maynard','M','hugh.maynard@outlook.com','706-424-5581','2000-03-28','4085 Limer Street, Howard Lake, Minnesota 55349'),</p>
+		<p>(10046,'Jane Beard','F','jane.beard@yahoo.com','205-978-9562','1998-11-25','3498 Wright Court, Vestavia Hills, Alabama 35216'),</p>
+		<p>(10047,'Kirk Sampson','M','kirk.sampson@gmail.com','630-899-0974','1983-06-20','1257 Lewis Street, Schaumburg, Illinois 60173'),</p>
+		<p>(10048,'Brenda Ward','F','brenda.ward@icloud.com','419-465-2341','2000-12-10','1682 Cedarstone Drive, Monroeville, Ohio 44847'),</p>
+		<p>(10049,'Troy Hood','M','troy.hood@yahoo.com','847-591-3491','1980-02-24','1370 Thomas Street, Winnetka, Illinois 60093'),</p>
+		<p>(10050,'Myrna Small','F','myrna.small@gmail.com','646-821-0791','1985-11-13','1688 Forest Avenue, Haines, Oregon 97833');</p>
+	</div>
+	<br><hr><br>
+	<p style="text-indent:5em">CREATE TABLE STORES(</p>
+	<div style="text-indent:7em">
+		<p>STORE_ID INTEGER NOT NULL,</p>
+		<p>LOCATION VARCHAR(25) NOT NULL,</p>
+		<p>REGION VARCHAR(25) NOT NULL,</p>
+		<p>MANAGER INTEGER,</p>
+		<p>STORE_TARGET MONEY NOT NULL,</p>
+		<p>STORE_SALES MONEY NOT NULL,</p>
+		<p>PRIMARY KEY (STORE_ID))</p>
+	</div>
+	<br>
+	<p style="text-indent:5em">INSERT INTO STORES</p>
+	<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+		<p>(51,'Detroit','Northern', 4,8700000.00,9387206.25),</p>
+		<p>(52, 'Chicago', 'Midwestern', 7, 9500000.00, 10236548.75),</p>
+		<p>(53, 'New York', 'Eastern', 10, 12000000.00, 13587423.30),</p>
+		<p>(54, 'Los Angeles', 'Western', 6, 8000000.00, 7654321.50),</p>
+		<p>(55, 'Dallas', 'Southern', 5, 7000000.00, 7521309.80),</p>
+		<p>(56, 'Denver', 'Midwestern', 8, 8500000.00, 9201567.40),</p>
+		<p>(57, 'Miami', 'Southern', 3, 6000000.00, 5543120.25),</p>
+		<p>(58, 'Seattle', 'Western', 9, 9500000.00, 10324589.60),</p>
+		<p>(59, 'Boston', 'Eastern', 11, 11000000.00, 11876234.75),</p>
+		<p>(60, 'Phoenix', 'Western', 2, 7200000.00, 7890123.45);</p>
+	</div>
+	<br><hr><br>
+	<p style="text-indent:5em">CREATE TABLE EMPLOYEES(</p>
+	<div style="text-indent:7em">
+		<p>EMP_ID INTEGER NOT NULL,</p>
+		<p>FL_NAME VARCHAR(30) NOT NULL,</p>
+		<p>AGE INTEGER NOT NULL,</p>
+		<p>STORE INTEGER,</p>
+		<p>TITLE VARCHAR(50) NOT NULL,</p>
+		<p>PHONE_AREA CHAR(3) NOT NULL,</p>
+		<p>PHONE_NUM CHAR(8) NOT NULL,</p>
+		<p>PHONE_EXT CHAR(4) NOT NULL,</p>
+		<p>HIRE_DATE SMALLDATETIME NOT NULL,</p>
+		<p>SUPERVISOR INTEGER,</p>
+		<p>EMP_TARGET MONEY NOT NULL,</p>
+		<p>EMP_SALES MONEY NOT NULL,</p>
+		<p>PRIMARY KEY (EMP_ID, PHONE_AREA, PHONE_NUM, PHONE_EXT))</p>
+	</div>
+	<br>
+	<p style="text-indent:5em">INSERT INTO EMPLOYEES</p>
+	<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+		<p>(1,'Damien Fletcher',44,56,'Chief Marketing Officer (CMO)','303','954-6746','5601','2011-09-24',NULL,1240000.00,1426987.46),</p>
+		<p>(2,'Rachel Floyd',46,60,'Vice President of Sales','213','436-7550','5401','2010-07-21',NULL,1800000.00,2106791.54),</p>
+		<p>(3,'Steven Fields',41,57,'Director of Marketing Strategy','872','742-6395','5202','2013-04-16',1,870000.00,920467.59),</p>
+		<p>(4,'Julian Davenport',42,51,'Director of Sales Operations','206','233-7133','5803','2014-12-05',2,972000.00,991439.62),</p>
+		<p>(5,'Chris Houston',38,55,'Brand Manager','617','632-5628','5904','2024-06-01',1,735000.00,773464.21),</p>
+		<p>(6,'Anaya Cochran',35,54,'Sales Manager','214','774-4491','5504','2010-08-13',2,861000.00,761673.50),</p>
+		<p>(7,'Josie Gilmore',34,52,'Marketing Communications Manager','602','851-6824','6005','2012-05-21',1,721000.00,736190.41),</p>
+		<p>(8,'Tiago Nunez',39,56,'Retail Sales Supervisor','212','283-7740','5307','2015-02-28',6,679000.00,692430.47),</p>
+		<p>(9,'Jensen Maxwell',33,58,'E-commerce Manager','305','304-4176','5706','2014-09-06',2,621000.00,561874.61),</p>
+		<p>(10,'Nicole James',32,53,'Social Media Marketing Specialist','213','910-4553','5408','2018-01-04',3,546000.00,486349.34),</p>
+		<p>(11,'Myla Ali',37,59,'Account Executive','212','942-5521','5305','2016-08-15',6,607000.00,697361.89),</p>
+		<p>(12,'Olive Nelson',30,55,'Public Relations Coordinator','214','486-9828','5506','2017-04-11',7,573000.00,668150.52),</p>
+		<p>(13,'Leah Pennington',32,52,'Merchandising Analyst','872','599-0323','5205','2016-11-08',5,594000.00,762408.49),</p>
+		<p>(14,'Findlay Jenkins',34,51,'Sales Support Specialist','313','876-3411','5108','2019-10-02',6,468000.00,561982.67),</p>
+		<p>(15,'Theodore York',38,56,'Content Marketing Coordinator','303','370-7352','5609','2020-06-09',3,496000.00,546503.79),</p>
+		<p>(16,'Kaitlin Tucker',36,57,'Visual Merchandising Manager','305','436-9395','5710','2017-09-21',5,438000.00,676412.38),</p>
+		<p>(17,'Scott Leon',41,59,'Customer Relationship Manager','617','866-4331','5904','2013-07-01',2,426000.00,346378.91),</p>
+		<p>(18,'Casey Malone',29,NULL,'Digital Marketing Specialist (Remote)','212','820-8649','5325','2020-12-07',3,379000.00,476413.37),</p>
+		<p>(19,'Amber Schultz',27,58,'Sales Associate','206','781-5084','5816','2022-05-08',8,299000.00,378315.82),</p>
+		<p>(20,'Scarlett Sanders',28,56,'Marketing Assistant','303','769-9919','5629','2021-11-19',7,263000.00,343705.73);</p>
+	</div>
+	<br><hr><br>
+	<p style="text-indent:5em">CREATE TABLE PRODUCTS(</p>
+	<div style="text-indent:7em">
+		<p>MAN_ID CHAR(3) NOT NULL,</p>
+		<p>PROD_ID VARCHAR(4) NOT NULL,</p>
+		<p>CATEGORY VARCHAR(50) NOT NULL,</p>
+		<p>STYLE VARCHAR(50) NOT NULL,</p>
+		<p>COLOR VARCHAR(20) NOT NULL,</p>
+		<p>SIZE VARCHAR(10),</p>
+		<p>PRICE MONEY NOT NULL,</p>
+		<p>AV_QUANT INTEGER NOT NULL,</p>
+		<p>PRIMARY KEY (MAN_ID, PROD_ID))</p>
+	</div>
+	<br>
+	<p style="text-indent:5em">INSERT INTO PRODUCTS</p>
+	<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+		<p>('AWY', '29AH', 'Jeans', 'Slim Fit', 'Black', '32x34', 49.99, 150),</p>
+		<p>('AWY', '29AK', 'Sweater', 'Crew Neck', 'Gray', 'S', 59.99, 140),</p>
+		<p>('AWY', '29AL', 'Sweatpants', 'Jogger', 'Black', 'M', 44.99, 160),</p>
+		<p>('AWY', '29AM', 'Watch', 'Digital', 'Silver', NULL, 69.99, 60),</p>
+		<p>('AWY', '29AO', 'Sunglasses', 'Aviator', 'Black', NULL, 29.99, 130),</p>
+		<p>('BPL', '701', 'T-Shirt', 'Casual', 'Blue', 'M', 19.99, 150),</p>
+		<p>('BPL', '702', 'Shorts', 'Sports', 'Gray', 'XL', 24.99, 95),</p>
+		<p>('BPL', '703', 'Tie', 'Silk', 'Navy', NULL, 19.99, 170),</p>
+		<p>('BPL', '704', 'Jacket', 'Leather', 'Brown', 'XL', 129.99, 150),</p>
+		<p>('LRF', '9001', 'Dress Shirt', 'Classic', 'White', 'L', 39.99, 120),</p>
+		<p>('LRF', '9002', 'Boots', 'Ankle', 'Black', '7', 89.99, 380),</p>
+		<p>('LRF', '9003', 'Sandals', 'Flip-Flop', 'Brown', '8', 19.99, 110),</p>
+		<p>('LRF', '9004', 'Blouse', 'Flowy', 'Pink', 'S', 34.99, 185),</p>
+		<p>('FJD', '55AA', 'Sneakers', 'Running', 'Red', '9', 79.99, 125),</p>
+		<p>('FJD', '55AB', 'Hoodie', 'Zip-Up', 'Blue', 'L', 49.99, 110),</p>
+		<p>('FJD', '55AC', 'Gloves', 'Winter', 'Gray', 'L', 14.99, 130),</p>
+		<p>('FJD', '55AD', 'Backpack', 'Casual', 'Blue', NULL, 39.99, 40),</p>
+		<p>('ISE', '1001', 'Skirt', 'A-Line', 'Green', 'M', 29.99, 180),</p>
+		<p>('ISE', '1002', 'Hat', 'Baseball', 'Red', NULL, 14.99, 90),</p>
+		<p>('ISE', '1003', 'Scarf', 'Knit', 'Purple', NULL, 22.99, 65),</p>
+		<p>('XTM', 'RX01', 'T-Shirt', 'V-Neck', 'White', 'L', 29.99, 100),</p>
+		<p>('XTM', 'RX02', 'Jeans', 'Straight Fit', 'Blue', '34x32', 59.99, 80),</p>
+		<p>('XTM', 'RX03', 'Sneakers', 'High Top', 'Black', '9', 79.99, 50),</p>
+		<p>('XTM', 'RX04', 'Dress Shirt', 'Slim Fit', 'Light Blue', 'M', 39.99, 120),</p>
+		<p>('JHR', '401', 'Dress', 'Formal', 'Black', 'M', 79.99, 60),</p>
+		<p>('JHR', '402', 'Blazer', 'Slim Fit', 'Gray', 'L', 89.99, 40),</p>
+		<p>('MGY', 'US01', 'Sweatshirt', 'Hooded', 'Navy', 'XL', 44.99, 120),</p>
+		<p>('MGY', 'US02', 'Pants', 'Chino', 'Beige', '32x30', 34.99, 150),</p>
+		<p>('OPQ', 'SW01', 'Swimsuit', 'One-Piece', 'Turquoise', 'L', 69.99, 80),</p>
+		<p>('OPQ', 'SW02', 'Board Shorts', 'Printed', 'Orange', '32', 54.99, 50);</p>
+	</div>
+	<br><hr><br>
+	<p style="text-indent:5em">CREATE TABLE ORDERS(</p>
+	<div style="text-indent:7em">
+		<p>ORDER_NUM INTEGER NOT NULL,</p>
+		<p>ORDER_DATE SMALLDATETIME NOT NULL,</p>
+		<p>CUST_NUM INTEGER NOT NULL,</p>
+		<p>ORD_STORE INTEGER NOT NULL,</p>
+		<p>MAN CHAR(3) NOT NULL,</p>
+		<p>PROD VARCHAR(5) NOT NULL,</p>
+		<p>QUANT INTEGER NOT NULL,</p>
+		<p>ORD_PRICE MONEY NOT NULL,</p>
+		<p>ORDER_STATUS VARCHAR(20) NOT NULL,</p>
+		<p>SHIP_ADDR VARCHAR(100),</p>
+		<p>PAYMENT_METHOD VARCHAR(50) NOT NULL,</p>
+		<p>PRIMARY KEY (ORDER_NUM))</p>
+	</div>
+	<br>
+	<p style="text-indent:5em">INSERT INTO ORDERS</p>
+	<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+		<p>(500001, '2020-03-15 12:45:24', 10005, 52, 'AWY', '29AH', 5, 249.95, 'In-Store', NULL, 'QR Code'),
+		<p>(500002, '2019-07-22 16:31:20', 10018, 57, 'BPL', '703', 7, 139.93, 'Delivered', '3646 Southern Avenue, Thayer, Iowa 50254', 'PayPal'),</p>
+		<p>(500003, '2018-11-10 18:34:56', 10031, 55, 'LRF', '9002', 9, 809.91, 'In-Store', NULL, 'Debit Card'),</p>
+		<p>(500004, '2020-01-05 02:53:48', 10012, 51, 'XTM', 'RX01', 6, 179.94, 'Delivered', '416 Gladwell Street, Sherman, Texas 75090', 'Cash on Delivery (COD)'),</p>
+		<p>(500005, '2022-04-18 17:35:46', 10049, 58, 'FJD', '55AC', 8, 119.92, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500006, '2020-12-01 19:42:57', 10025, 59, 'MGY', 'US01', 10, 449.90, 'Returned', '1048 Coulter Lane, Richmond, Virginia 23222', 'Debit Card'),</p>
+		<p>(500007, '2022-09-09 00:25:36', 10041, 53, 'JHR', '401', 5, 399.95, 'In-Store', NULL, 'Cash'),</p>
+		<p>(500008, '2023-12-30 10:36:24', 10037, 54, 'FJD', '55AD', 6, 239.94, 'Shipped', '4968 Wescam Court, Boston, Massachusetts 02110', 'Samsung Pay'),</p>
+		<p>(500009, '2019-12-12 07:12:54', 10010, 56, 'XTM', 'RX02', 4, 239.96, 'In-Store', NULL, 'Cryptocurrencies'),</p>
+		<p>(500010, '2016-08-27 08:54:21', 10022, 52, 'ISE', '1003', 7, 160.93, 'Cancelled', '2 Haven Lane, Hillsdale, Michigan 49242', 'Credit Card'),</p>
+		<p>(500011, '2017-06-14 14:28:03', 10046, 55, 'FJD', '55AB', 5, 249.95, 'In-Store', NULL, 'NFC'),</p>
+		<p>(500012, '2024-01-10 18:09:47', 10035, 57, 'BPL', '701', 9, 179.91, 'Pending', '2356 Mill Street, Anderson, South Carolina 29621', 'PayPal'),</p>
+		<p>(500013, '2014-11-20 09:42:15', 10029, 51, 'ISE', '1002', 6, 209.94, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500014, '2015-06-08 21:15:36', 10003, 58, 'LRF', '9003', 8, 559.92, 'Cancelled', '4285 Henery Street, Wibaux, Montana 59353', 'Microsoft Wallet'),</p>
+		<p>(500015, '2021-08-17 12:03:28', 10038, 59, 'MGY', 'US02', 14, 489.86, 'In-Store', NULL, 'Apple Pay'),</p>
+		<p>(500016, '2017-05-25 15:48:09', 10015, 50, 'JHR', '402', 5, 449.95, 'Delivered', '3214 Maryland Avenue, Feather Sound, Florida 34622', 'Cryptocurrencies'),</p>
+		<p>(500017, '2023-02-12 08:37:56', 10043, 53, 'FJD', '55AA', 6, 479.94, 'In-Store', NULL, 'Bank Transfer'),</p>
+		<p>(500018, '2023-12-29 17:12:44', 10028, 54, 'XTM', 'RX01', 8, 239.92, 'Shipped', '3962 Dale Avenue, Tacoma, Washington 98402', 'Cash on Delivery (COD)'),</p>
+		<p>(500019, '2017-07-07 11:59:18', 10017, 56, 'OPQ', 'SW01', 12, 839.88, 'In-Store', NULL, 'Google Pay'),</p>
+		<p>(500020, '2023-12-19 14:27:03', 10009, 52, 'ISE', '1001', 7, 209.93, 'Processing', '1421 Huntz Lane, San Francisco, California 94107', 'Apple Pay'),</p>
+		<p>(500021, '2012-10-08 19:04:37', 10019, 57, 'LRF', '9001', 4, 159.96, 'In-Store', NULL, 'Cash'),</p>
+		<p>(500022, '2011-03-26 07:18:52', 10032, 58, 'BPL', '702', 6, 149.94, 'Refunded', '2155 Twin Willow Lane, Wilmington, North Carolina 28405', 'Credit Card'),</p>
+		<p>(500023, '2021-07-13 22:50:09', 10013, 51, 'MGY', 'US01', 8, 359.92, 'In-Store', NULL, 'Venmo'),</p>
+		<p>(500024, '2023-12-04 10:13:27', 10024, 59, 'JHR', '401', 5, 399.95, 'Backordered', '444 Winifred Way, Charlotte, North Carolina 28212', 'Cash on Delivery (COD)'),</p>
+		<p>(500025, '2017-12-21 12:47:18', 10033, 60, 'FJD', '55AB', 10, 499.90, 'In-Store', NULL, 'Samsung Pay'),</p>
+		<p>(500026, '2021-09-05 16:59:34', 10036, 53, 'ISE', '1002', 6, 209.94, 'Delivered', '2983 Allison Avenue, Portsmouth, Virginia 23707', 'Credit Card'),</p>
+		<p>(500027, '2022-04-02 03:35:51', 10045, 54, 'XTM', 'RX02', 15, 899.85, 'In-Store', NULL, 'Cash'),</p>
+		<p>(500028, '2017-12-20 22:59:06', 10002, 56, 'FJD', '55AD', 7, 279.93, 'Delivered', '3953 Village View Drive, Sturtevant, Wisconsin 53177', 'Credit Card'),</p>
+		<p>(500029, '2016-07-10 09:20:23', 10042, 52, 'LRF', '9003', 4, 91.96, 'In-Store', NULL, 'Bank Transfer'),</p>
+		<p>(500030, '2023-12-30 18:42:05', 10047, 57, 'AWY', '29AM', 18, 1259.82, 'Shipped', '1257 Lewis Street, Schaumburg, Illinois 60173', 'PayPal'),</p>
+		<p>(500031, '2015-06-17 08:14:52', 10001, 58, 'JHR', '402', 6, 539.94, 'In-Store', NULL, 'Debit Card'),</p>
+		<p>(500032, '2014-03-05 13:29:37', 10016, 53, 'FJD', '55AA', 7, 559.93, 'Cancelled', '2396 West Street, Blissfield, Ohio 43805', 'Debit Card'),</p>
+		<p>(500033, '2021-08-02 16:08:30', 10030, 54, 'XTM', 'RX01', 7, 209.93, 'In-Store', NULL, 'Cash'),</p>
+		<p>(500034, '2013-05-21 03:57:15', 10044, 55, 'BPL', '701', 4, 79.96, 'Refunded', '2438 Bridge Avenue, Tampa, Florida 33625', 'Credit Card'),</p>
+		<p>(500035, '2022-02-15 20:51:00', 10011, 56, 'ISE', '1003', 5, 114.95, 'In-Store', NULL, 'Apple Pay'),</p>
+		<p>(500036, '2016-11-10 21:35:45', 10023, 57, 'AWY', '29AL', 6, 269.94, 'Delivered', '4019 Clover Drive, Colorado Springs, Colorado 80918', 'Cash on Delivery (COD)'),</p>
+		<p>(500037, '2021-07-28 14:22:12', 10048, 51, 'MGY', 'US02', 7, 349.93, 'In-Store', NULL, 'Cash'),</p>
+		<p>(500038, '2023-12-14 05:44:45', 10007, 52, 'FJD', '55AB', 8, 399.92, 'Processing Error', '601 Seltice Way, Hayden Lake, Idaho 83835', 'PayPal'),</p>
+		<p>(500039, '2017-10-01 15:07:23', 10021, 53, 'JHR', '401', 5, 449.95, 'In-Store', NULL, 'Cash'),</p>
+		<p>(500040, '2024-01-08 23:27:18', 10014, 54, 'LRF', '9001', 4, 159.96, 'Partially Shipped', '4757 New Creek Road, Williamsburg, Missouri 63388', 'Cash on Delivery (COD)'),</p>
+		<p>(500041, '2018-08-12 11:53:36', 10039, 55, 'ISE', '1002', 7, 419.93, 'In-Store', NULL, 'NFC'),</p>
+		<p>(500042, '2020-12-05 19:18:01', 10005, 56, 'XTM', 'RX02', 8, 479.92, 'Delivered', '2362 Mount Olive Road, Roswell, Georgia 30076', 'Credit Card'),</p>
+		<p>(500043, '2023-07-22 17:11:51', 10018, 57, 'BPL', '703', 6, 269.94, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500044, '2023-11-08 12:52:36', 10031, 58, 'LRF', '9002', 5, 449.95, 'Failed Payment', '615 Columbia Boulevard, Charlotte, North Carolina 28290', 'PayPal'),</p>
+		<p>(500045, '2020-11-28 09:06:56', 10012, 59, 'XTM', 'RX01', 8, 239.92, 'In-Store', NULL, 'Venmo'),</p>
+		<p>(500046, '2016-02-15 09:39:21', 10049, 60, 'FJD', '55AC', 13, 194.87, 'Delivered', '1370 Thomas Street, Winnetka, Illinois 60093', 'Credit Card'),</p>
+		<p>(500047, '2021-06-30 18:17:05', 10025, 51, 'MGY', 'US01', 6, 269.94, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500048, '2018-09-16 20:45:49', 10041, 52, 'ISE', '1003', 5, 114.95, 'Delivered', '3229 Coburn Hollow Road, Tuba City, Arizona 86045', 'Microsoft Wallet'),</p>
+		<p>(500049, '2023-05-03 22:30:34', 10037, 53, 'FJD', '55AD', 12, 479.88, 'In-Store', NULL, 'Cryptocurrencies'),</p>
+		<p>(500050, '2019-01-15 08:53:12', 10010, 54, 'XTM', 'RX02', 4, 239.96, 'Cancelled', '1341 Wines Lane, Houston, Texas 77027', 'Cryptocurrencies'),</p>
+		<p>(500051, '2022-08-31 06:14:28', 10022, 55, 'AWY', '29AH', 6, 299.94, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500052, '2023-12-20 09:09:16', 10019, 56, 'LRF', '9003', 7, 160.93, 'Shipped', '3593 Pennsylvania Avenue, Harrisburg, Pennsylvania 17108', 'Credit Card'),</p>
+		<p>(500053, '2022-01-06 03:29:56', 10032, 57, 'BPL', '702', 8, 719.92, 'In-Store', NULL, 'Debit Card'),</p>
+		<p>(500054, '2019-09-13 04:05:45', 10013, 58, 'ISE', '1002', 9, 314.91, 'Delivered', '1444 Traders Alley, Kansas City, Missouri 64106', 'Cryptocurrencies'),</p>
+		<p>(500055, '2022-05-10 07:46:38', 10035, 59, 'MGY', 'US02', 6, 539.94, 'In-Store', NULL, 'Google Pay'),</p>
+		<p>(500056, '2021-12-27 12:23:29', 10038, 60, 'JHR', '401', 4, 319.96, 'Refunded', '1984 Lena Lane, Polkville, Mississippi 39117', 'Debit Card'),</p>
+		<p>(500057, '2021-09-23 15:38:17', 10009, 51, 'FJD', '55AA', 7, 559.93, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500058, '2012-06-08 10:01:04', 10026, 52, 'XTM', 'RX01', 10, 299.90, 'Delivered', '647 Monroe Street, Houston, Texas 77016', 'PayPal'),</p>
+		<p>(500059, '2013-03-25 18:53:51', 10045, 53, 'ISE', '1003', 5, 114.95, 'In-Store', NULL, 'Cryptocurrencies'),</p>
+		<p>(500060, '2023-12-11 02:17:34', 10040, 54, 'AWY', '29AM', 14, 979.86, 'Partially Shipped', '1635 Bobcat Drive, Detroit, Michigan 48226', 'Credit Card'),</p>
+		<p>(500061, '2017-03-04 06:45:19', 10028, 55, 'OPQ', 'SW02', 7, 349.93, 'In-Store', NULL, 'PayPal'),</p></p>
+		<p>(500062, '2021-07-21 21:29:04', 10015, 56, 'BPL', '703', 8, 159.92, 'Returned', '3214 Maryland Avenue, Feather Sound, Florida 34622', 'Google Pay'),</p>
+		<p>(500063, '2019-01-09 09:00:33', 10046, 57, 'ISE', '1002', 5, 299.95, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500064, '2015-07-05 15:14:10', 10004, 58, 'JHR', '402', 4, 359.96, 'Delivered', '3106 Spadafore Drive, Altoona, Pennsylvania 16601', 'Cash on Delivery (COD)'),</p>
+		<p>(500065, '2020-04-29 11:36:22', 10029, 59, 'XTM', 'RX02', 5, 299.95, 'In-Store', NULL, 'PayPal'),</p>
+		<p>(500066, '2022-10-15 18:10:07', 10036, 60, 'FJD', '55AB', 16, 799.84, 'Delivered', '2983 Allison Avenue, Portsmouth, Virginia 23707', 'Cryptocurrencies'),</p>
+		<p>(500067, '2014-02-01 03:42:55', 10024, 51, 'ISE', '1003', 7, 160.93, 'In-Store', NULL, 'Credit Card'),</p>
+		<p>(500068, '2021-08-17 08:19:11', 10020, 52, 'AWY', '29AL', 8, 359.92, 'Returned', '3109 Saint Marys Avenue, Syracuse, New York 13202', 'PayPal'),</p>
+		<p>(500069, '2018-05-12 14:48:56', 10008, 53, 'LRF', '9002', 5, 449.95, 'In-Store', NULL, 'Cryptocurrencies'),</p>
+		<p>(500070, '2024-01-08 20:34:18', 10033, 54, 'BPL', '701', 12, 239.88, 'Backordered', '1639 Blane Street, Saint Louis, Missouri 63101', 'Apple Pay');</p>
+	</div>
+	<br><hr><br>
+	<p style="text-indent:5em">CREATE TABLE MANUFACTURERS(</p>
+	<div style="text-indent:7em">
+		<p>MANUF VARCHAR(4) NOT NULL,</p>
+		<p>MAN_NAME VARCHAR(100) NOT NULL,</p>
+		<p>CONT_PERSON VARCHAR(50) NOT NULL,</p>
+		<p>CONT_PERSON_MAIL VARCHAR(50) NOT NULL,</p>
+		<p>CONT_PERSON_PHONE CHAR(20) NOT NULL,</p>
+		<p>PRIMARY KEY (MANUF))</p>
+	</div>
+		<br>
+		<p style="text-indent:5em">INSERT INTO MANUFACTURERS</p>
+		<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+			<p>('AWY', 'Lenzing AG', 'Else Marinkovic', 'else.marinkovic@lenzing.com', '+43 660-348-0310'),</p>
+			<p>('BPL', 'Worn Again Technologies', 'Philippa Cox', 'philippa.cox@worn-again.co.uk', '+44 775-556-6312'),</p>
+			<p>('LRF', 'Klopman International', 'Elia Giannini', 'elia.giannini@klopman.com', '+39 369-786-935'),</p>
+			<p>('FJD', 'Albini Group', 'Silvestro Orlando', 'silvestro.orlando@albini-group.com', '+39 335-145-291'),</p>
+			<p>('ISE', 'Schoeller Textil AG', 'Ferdinand Bachmann', 'ferdinand.bachmann@schoeller-textil.com', '+41 33-106-5908'),</p>
+			<p>('XTM', 'Borges International Group', 'Hugo Egea', 'hugo.egea@borges.com', '+34 858-610-733'),</p>
+			<p>('JHR', 'Marzotto Group', 'Bianca Giordano', 'bianca.giordano@marzotto.com', '+39 345-592-849'),</p>
+			<p>('MGY', 'Gebrüder Otto', 'Lydia Mangold',	'lydia.magold@gebruder-otto.com', '+49 30-245259373'),</p>
+			<p>('OPQ', 'ITV Denkendorf Produktservice GmbH', 'Jolanta Behr', 'jolanta.behr@itv-denkendorf.com', '+49 30-957501713'),</p>
+			<p>('ARN', 'Holland & Sherry', 'Dylan Knight', 'dylan.knight@holland-sherry.co.uk', '+44 1632-960644'),</p>
+			<p>('HPS', 'Salvatore Ferragamo SpA', 'Karl Santoro', 'karl.santoro@salvatore-ferragamo.com', '+39 316-845-1913'),</p>
+			<p>('KTC', 'Koninklijke Ten Cate NV', 'Merel Hofland', 'merel.hofland@koninklijke-ten-cate.com', '+31 71-991-2216'),</p>
+			<p>('CTB', 'Chargeurs SA', 'Jean-Charles Ange', 'jeancharles.ange@chargeurs.com', '+33 655-550-720'),</p>
+			<p>('YFZ', 'Cyamopsis Biotech USA LLC', 'Alison Walls', 'alison.walls@cyamopsis.com', '+1 409-990-5635'),</p>
+			<p>('STO', 'Milliken & Company', 'Renee Meyers', 'renee.meyers@milliken.com', '+1 442-443-3597'),</p>
+			<p>('QRX', 'Hanesbrands Inc.', 'Marcy Humphrey', 'marcy.humphrey@hanesbrands.com', '+1 719-731-3395'),</p>
+			<p>('YND', 'Burlington Industries', 'Ian Davenport', 'ian.davenport@burlington.com', '+1 315-332-1237'),</p>
+			<p>('RFZ', 'Glen Raven Inc.', 'Johnny Arnold','johnny.arnold@glen-raven.com', '+1 408-656-6110'),</p>
+			<p>('IFP', 'W.L. Gore & Associates', 'Lindsey Crowley', 'lindsey.crowley@w-l-gore.com', '+1 857-423-6691'),</p>
+			<p>('DYM', 'Culp Inc.', 'Sophia Roth', 'sophia.roth@culp.com', '+1 640-591-0881');</p>
+	</div>
+	<br><hr><br>
+	<p style="text-indent:5em">CREATE TABLE CAMPAIGNS(</p>
+	<div style="text-indent:7em">
+		<p>CAMP_ID INTEGER NOT NULL,</p>
+		<p>CAMP_NAME VARCHAR(100) NOT NULL,</p>
+		<p>CUST_NUMBER INTEGER,</p>
+		<p>START_DATE SMALLDATETIME NOT NULL,</p>
+		<p>END_DATE SMALLDATETIME NOT NULL,</p>
+		<p>AV_PRICE INTEGER NOT NULL,</p>
+		<p>PRIMARY KEY (CAMP_ID))</p>
+	</div>
+	<br>
+	<p style="text-indent:5em">INSERT INTO CAMPAIGNS</p>
+	<p style="text-indent:5em">VALUES</p>
+	<div style="text-indent:7em">
+		<p>(2001, 'Summer Sale 2020', 10010, '2020-06-01 00:00:00', '2020-08-31 23:59:59', 800),</p>
+		<p>(2002, 'Back-to-School Promo', 10022, '2020-08-15 00:00:00', '2020-09-30 23:59:59', 500),</p>
+		<p>(2003, 'Holiday Extravaganza', 10008, '2020-11-01 00:00:00', '2020-12-25 23:59:59', 1000),</p>
+		<p>(2004, 'New Year, New Style', 10027, '2020-12-26 00:00:00', '2021-01-31 23:59:59', 600),</p>
+		<p>(2005, 'Spring Fashion Launch', 10014, '2021-03-01 00:00:00', '2021-04-30 23:59:59', 9000),</p>
+		<p>(2006, 'Memorial Day Clearance', 10035, '2021-05-25 00:00:00', '2021-05-31 23:59:59', 400),</p>
+		<p>(2007, 'Independence Day Sale', 10020, '2021-07-01 00:00:00', '2021-07-05 23:59:59', 600),</p>
+		<p>(2008, 'Fall Preview Event', 10018, '2021-08-15 00:00:00', '2021-09-15 23:59:59', 800),</p>
+		<p>(2009, 'Labor Day Weekend Sale', 10041, '2021-09-01 00:00:00', '2021-09-07 23:59:59', 400),</p>
+		<p>(2010, 'Fashion Frenzy Friday', 10002, '2021-11-01 00:00:00', '2021-11-07 23:59:59', 500),</p>
+		<p>(2011, 'Black Friday Bonanza', 10048, '2021-11-28 00:00:00', '2021-11-30 23:59:59', 1200),</p>
+		<p>(2012, 'Cyber Monday Madness', 10004, '2021-11-30 00:00:00', '2021-12-01 23:59:59', 900),</p>
+		<p>(2013, 'Holiday Gift Spectacular', 10029, '2021-12-10 00:00:00', '2021-12-25 23:59:59', 10000),</p>
+		<p>(2014, 'New Year, New Wardrobe', 10013, '2022-01-01 00:00:00', '2022-01-31 23:59:59', 6000),</p>
+		<p>(2015, 'Valentines Day Romance', 10023, '2022-02-01 00:00:00', '2022-02-14 23:59:59', 4000),</p>
+		<p>(2016, 'Spring Style Revival', 10026, '2022-04-01 00:00:00', '2022-04-30 23:59:59', 6500),</p>
+		<p>(2017, 'Mothers Day Elegance', 10011, '2022-05-01 00:00:00', '2022-05-10 23:59:59', 4500),</p>
+		<p>(2018, 'Memorial Day Mega Sale', 10046, '2022-05-25 00:00:00', '2022-05-31 23:59:59', 5000),</p>
+		<p>(2019, 'Summer Sizzle Special', 10033, '2022-06-01 00:00:00', '2022-08-31 23:59:59', 12000),</p>
+		<p>(2020, 'Back-to-School Bliss', 10007, '2022-08-15 00:00:00', '2022-09-30 23:59:59', 8000),</p>
+		<p>(2021, 'Holiday Extravaganza', 10008, '2022-11-01 00:00:00', '2022-12-25 23:59:59', 10000),</p>
+		<p>(2022, 'New Year, New Style', 10027, '2023-01-01 00:00:00', '2023-01-31 23:59:59', 6000),</p>
+		<p>(2023, 'Spring Fashion Launch', 10014, '2023-03-01 00:00:00', '2023-04-30 23:59:59', 9000),</p>
+		<p>(2024, 'Memorial Day Clearance', 10035, '2023-05-25 00:00:00', '2023-05-31 23:59:59', 4000),</p>
+		<p>(2025, 'Independence Day Sale', 10020, '2023-07-01 00:00:00', '2023-07-05 23:59:59', 6500),</p>
+		<p>(2026, 'Fall Preview Event', 10018, '2023-08-15 00:00:00', '2023-09-15 23:59:59', 8000),</p>
+		<p>(2027, 'Labor Day Weekend Sale', 10041, '2023-09-01 00:00:00', '2023-09-07 23:59:59', 4500),</p>
+		<p>(2028, 'Fashion Frenzy Friday', 10002, '2023-11-01 00:00:00', '2023-11-07 23:59:59', 5500),</p>
+		<p>(2029, 'Black Friday Bonanza', 10048, '2023-11-28 00:00:00', '2023-11-30 23:59:59', 12000),</p>
+		<p>(2030, 'Cyber Monday Madness', 10004, '2023-11-30 00:00:00', '2023-12-01 23:59:59', 9000),</p>
+		<p>(2031, 'Holiday Gift Spectacular', 10029, '2023-12-10 00:00:00', '2023-12-25 23:59:59', 10000),</p>
+		<p>(2032, 'New Year, New Wardrobe', 10013, '2024-01-01 00:00:00', '2024-01-31 23:59:59', 6000),</p>
+		<p>(2033, 'Valentines Day Romance', 10023, '2024-02-01 00:00:00', '2024-02-14 23:59:59', 4000),</p>
+		<p>(2034, 'Spring Style Revival', 10026, '2024-04-01 00:00:00', '2024-04-30 23:59:59', 6500),</p>
+		<p>(2035, 'Mothers Day Elegance', 10011, '2024-05-01 00:00:00', '2024-05-10 23:59:59', 45000),</p>
+		<p>(2036, 'Memorial Day Mega Sale', 10046, '2024-05-25 00:00:00', '2024-05-31 23:59:59', 5000),</p>
+		<p>(2037, 'Summer Sizzle Special', 10033, '2024-06-01 00:00:00', '2024-08-31 23:59:59', 12000),</p>
+		<p>(2038, 'Back-to-School Bliss', 10007, '2024-08-15 00:00:00', '2024-09-30 23:59:59', 8000),</p>
+		<p>(2039, 'Holiday Extravaganza', 10008, '2024-11-01 00:00:00', '2024-12-25 23:59:59', 10000),</p>
+		<p>(2040, 'New Year, New Style', 10027, '2025-01-01 00:00:00', '2025-01-31 23:59:59', 6000);</p>
+	</div>
+	<br><hr>
+	<h5><a href=#top>GO BACK TO THE TOP</a></h5><br>
+	<h3 id=head><a id=sqltables>Tables with HTML & CSS</a></h3>
+	<br>
+	<h3>CUSTOMERS</h3>
+	<table class=a>
+		<thead>
+			<tr>
+				<th>CUST_ID</th>
+				<th>CUST_NAME</th>
+				<th>CUST_GENDER</th>
+				<th>CUST_MAIL</th>
+				<th>CUST_PHONE</th>
+				<th>CUST_BIRTHDATE</th>
+				<th>CUST_ADDRESS</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>10001</td>
+				<td>Todd McBride</td>
+				<td>M</td>
+				<td>todd.mcbride@gmail.com</td>
+				<td>201-701-3460</td>
+				<td>1998-05-29 00:00:00</td>
+				<td>1714 Desert Broom Court, Newark, New Jersey 07102</td>
+			</tr>
+			<tr>
+				<td>10002</td>
+				<td>Robbie Washburn</td>
+				<td>F</td>
+				<td>robbie.washburn@icloud.com</td>
+				<td>240-216-0574</td>
+				<td>1999-11-20 00:00:00</td>
+				<td>3953 Village View Drive, Sturtevant, Wisconsin 53177</td>
+			</tr>
+			<tr>
+				<td>10003</td>
+				<td>Tomas Brady</td>
+				<td>M</td>
+				<td>tomas.brady@yahoo.com</td>
+				<td>316-794-9272</td>
+				<td>1979-04-13 00:00:00</td>
+				<td>4285 Henery Street, Wibaux, Montana 59353</td>
+			</tr>
+			<tr>
+				<td>10004</td>
+				<td>Ida Hunt</td>
+				<td>F</td>
+				<td>ida.hunt@gmail.com</td>
+				<td>814-794-1938</td>
+				<td>1980-09-01 00:00:00</td>
+				<td>3106 Spadafore Drive, Altoona, Pennsylvania 16601</td>
+			</tr>
+			<tr>
+				<td>10005</td>
+				<td>Lee Lyons</td>
+				<td>M</td>
+				<td>lee.lyons@outlook.com</td>
+				<td>678-895-0352</td>
+				<td>1987-06-28 00:00:00</td>
+				<td>2362 Mount Olive Road, Roswell, Georgia 30076</td>
+			</tr>
+			<tr>
+				<td>10006</td>
+				<td>Sheryl Crawford</td>
+				<td>F</td>
+				<td>sheryl.crawford@icloud.com</td>
+				<td>951-698-2455</td>
+				<td>1974-09-09 00:00:00</td>
+				<td>907 Brown Bear Drive, Murrieta, California 92562</td>
+			</tr>
+			<tr>
+				<td>10007</td>
+				<td>Steven Willson</td>
+				<td>M</td>
+				<td>steven.willson@gmail.com</td>
+				<td>208-772-1359</td>
+				<td>2000-10-18 00:00:00</td>
+				<td>601 Seltice Way, Hayden Lake, Idaho 83835</td>
+			</tr>
+			<tr>
+				<td>10008</td>
+				<td>Lydia Eddy</td>
+				<td>F</td>
+				<td>lydia.eddy@protonmail.com</td>
+				<td>229-881-4743</td>
+				<td>1998-03-09 00:00:00</td>
+				<td>2158 Locust Street, Albany, Georgia 31707</td>
+			</tr>
+			<tr>
+				<td>10008</td>
+				<td>Lydia Eddy</td>
+				<td>F</td>
+				<td>lydia.eddy@protonmail.com</td>
+				<td>229-881-4743</td>
+				<td>1998-03-09 00:00:00</td>
+				<td>2158 Locust Street, Albany, Georgia 31707</td>
+			</tr>
+			<tr>
+				<td>10009</td>
+				<td>Neil Meyers</td>
+				<td>M</td>
+				<td>neil.meyers@yahoo.com</td>
+				<td>978-615-7770</td>
+				<td>1974-01-13 00:00:00</td>
+				<td>1421 Huntz Lane, San Francisco, California 94107</td>
+			</tr>
+			<tr>
+				<td>10010</td>
+				<td>Carole Cotton</td>
+				<td>F</td>
+				<td>carole.cotton@gmail.com</td>
+				<td>832-376-3466</td>
+				<td>1984-04-01 00:00:00</td>
+				<td>1341 Wines Lane, Houston, Texas 77027</td>
+			</tr>
+			<tr>
+				<td>10011</td>
+				<td>Taylor Duffy</td>
+				<td>M</td>
+				<td>taylor.duffy@outlook.com</td>
+				<td>309-479-3012</td>
+				<td>1993-04-18 00:00:00</td>
+				<td>3537 Trainer Avenue, Castleton, Illinois 61426</td>
+			</tr>
+			<tr>
+				<td>10012</td>
+				<td>Emma Costa</td>
+				<td>F</td>
+				<td>emma.costa@icloud.com</td>
+				<td>903-209-6181</td>
+				<td>1984-10-10 00:00:00</td>
+				<td>416 Gladwell Street, Sherman, Texas 75090</td>
+			</tr>
+			<tr>
+				<td>10013</td>
+				<td>Howard Ewing</td>
+				<td>M</td>
+				<td>howard.ewing@gmail.com</td>
+				<td>816-329-7880</td>
+				<td>1980-11-05 00:00:00</td>
+				<td>1444 Traders Alley, Kansas City, Missouri 64106</td>
+			</tr>
+			<tr>
+				<td>10014</td>
+				<td>Lou Brock</td>
+				<td>F</td>
+				<td>lou.brock@yahoo.com</td>
+				<td>260-241-1737</td>
+				<td>2000-10-16 00:00:00</td>
+				<td>4757 New Creek Road, Williamsburg, Missouri 63388</td>
+			</tr>
+			<tr>
+				<td>10015</td>
+				<td>Patrick Holder</td>
+				<td>M</td>
+				<td>patrick.holder@gmail.com</td>
+				<td>727-564-2943</td>
+				<td>1979-12-28 00:00:00</td>
+				<td>3214 Maryland Avenue, Feather Sound, Florida 34622</td>
+			</tr>
+			<tr>
+				<td>10016</td>
+				<td>Sonya Ayers</td>
+				<td>F</td>
+				<td>sonya.ayers@icloud.com</td>
+				<td>616-799-8436</td>
+				<td>1983-07-20 00:00:00</td>
+				<td>2396 West Street, Blissfield, Ohio 43805</td>
+			</tr>
+			<tr>
+				<td>10017</td>
+				<td>Christopher Griffin</td>
+				<td>M</td>
+				<td>christopher.griffin@yahoo.com</td>
+				<td>803-643-4896</td>
+				<td>2001-02-18 00:00:00</td>
+				<td>11 Java Lane, Aiken, South Carolina 29801</td>
+			</tr>
+			<tr>
+				<td>10018</td>
+				<td>Blanca Wallace</td>
+				<td>F</td>
+				<td>blanca.wallace@gmail.com</td>
+				<td>641-338-9911</td>
+				<td>1979-07-06 00:00:00</td>
+				<td>3646 Southern Avenue, Thayer, Iowa 50254</td>
+			</tr>
+			<tr>
+				<td>10019</td>
+				<td>Ignacio Murray</td>
+				<td>M</td>
+				<td>ignacio.murray@outlook.com</td>
+				<td>732-380-6734</td>
+				<td>1989-05-29 00:00:00</td>
+				<td>3593 Pennsylvania Avenue, Harrisburg, Pennsylvania 17108</td>
+			</tr>
+			<tr>
+				<td>10020</td>
+				<td>Taylor Cassidy</td>
+				<td>F</td>
+				<td>taylor.cassidy@icloud.com</td>
+				<td>315-835-8415</td>
+				<td>1984-05-27 00:00:00</td>
+				<td>3109 Saint Marys Avenue, Syracuse, New York 13202</td>
+			</tr>
+			<tr>
+				<td>10021</td>
+				<td>Erick Daugherty</td>
+				<td>M</td>
+				<td>erick.daugherty@gmail.com</td>
+				<td>617-561-8261</td>
+				<td>1990-10-02 00:00:00</td>
+				<td>64799 Cedar Lane, Brookline, Massachusetts 02146</td>
+			</tr>
+			<tr>
+				<td>10022</td>
+				<td>Evelyn Choi</td>
+				<td>F</td>
+				<td>evelyn.choi@protonmail.com</td>
+				<td>517-607-4261</td>
+				<td>1984-09-01 00:00:00</td>
+				<td>2 Haven Lane, Hillsdale, Michigan 49242</td>
+			</tr>
+			<tr>
+				<td>10023</td>
+				<td>Matthew Stark</td>
+				<td>M</td>
+				<td>matthew.stark@yahoo.com</td>
+				<td>719-260-2205</td>
+				<td>1995-07-13 00:00:00</td>
+				<td>4019 Clover Drive, Colorado Springs, Colorado 80918</td>
+			</tr>
+			<tr>
+				<td>10024</td>
+				<td>Claire Barr</td>
+				<td>F</td>
+				<td>claire.barr@gmail.com</td>
+				<td>765-645-7725</td>
+				<td>1976-05-30 00:00:00</td>
+				<td>444 Winifred Way, Charlotte, North Carolina 28212</td>
+			</tr>
+			<tr>
+				<td>10025</td>
+				<td>Daryl Wilcox</td>
+				<td>M</td>
+				<td>daryl.wilcox@icloud.com</td>
+				<td>804-317-9951</td>
+				<td>1980-09-22 00:00:00</td>
+				<td>1048 Coulter Lane, Richmond, Virginia 23222</td>
+			</tr>
+			<tr>
+				<td>10026</td>
+				<td>Guadalupe Bates</td>
+				<td>F</td>
+				<td>guadalupe.bates@gmail.com</td>
+				<td>713-491-1934</td>
+				<td>1992-05-22 00:00:00</td>
+				<td>647 Monroe Street, Houston, Texas 77016</td>
+			</tr>
+			<tr>
+				<td>10027</td>
+				<td>Felipe Case</td>
+				<td>M</td>
+				<td>felipe.case@yahoo.com</td>
+				<td>214-584-8128</td>
+				<td>1994-04-09 00:00:00</td>
+				<td>2436 Romines Mill Road, Coldwater, Ohio 45828</td>
+			</tr>
+			<tr>
+				<td>10028</td>
+				<td>Eunice Mead</td>
+				<td>F</td>
+				<td>eunice.mead@outlook.com</td>
+				<td>253-691-7626</td>
+				<td>1995-11-26 00:00:00</td>
+				<td>3962 Dale Avenue, Tacoma, Washington 98402</td>
+			</tr>
+			<tr>
+				<td>10029</td>
+				<td>Wade Johnston</td>
+				<td>M</td>
+				<td>wade.johnston@gmail.com</td>
+				<td>740-595-8926</td>
+				<td>1982-03-30 00:00:00</td>
+				<td>1062 Jessie Street, Radnor, Ohio 43066</td>
+			</tr>
+			<tr>
+				<td>10030</td>
+				<td>Tiffany Shafer</td>
+				<td>F</td>
+				<td>tiffany.shafer@icloud.com</td>
+				<td>541-304-3755</td>
+				<td>1982-03-22 00:00:00</td>
+				<td>2193 New Street, Portland, Oregon 97205</td>
+			</tr>
+			<tr>
+				<td>10031</td>
+				<td>Theodore Shannon</td>
+				<td>M</td>
+				<td>theodore.shannon@yahoo.com</td>
+				<td>410-453-1671</td>
+				<td>1992-06-13 00:00:00</td>
+				<td>615 Columbia Boulevard, Charlotte, North Carolina 28290</td>
+			</tr>
+			<tr>
+				<td>10032</td>
+				<td>Kerry McCoy</td>
+				<td>F</td>
+				<td>kerry.mccoy@gmail.com</td>
+				<td>910-471-3412</td>
+				<td>2000-07-13 00:00:00</td>
+				<td>2155 Twin Willow Lane, Wilmington, North Carolina 28405</td>
+			</tr>
+			<tr>
+				<td>10033</td>
+				<td>Kent Young</td>
+				<td>M</td>
+				<td>kent.young@outlook.com</td>
+				<td>314-613-1988</td>
+				<td>1986-02-02 00:00:00</td>
+				<td>1639 Blane Street, Saint Louis, Missouri 63101</td>
+			</tr>
+			<tr>
+				<td>10034</td>
+				<td>Robin Friedman</td>
+				<td>F</td>
+				<td>robin.friedman@yahoo.com</td>
+				<td>305-360-9661</td>
+				<td>1982-05-14 00:00:00</td>
+				<td>903 Tyler Avenue, Pompano Beach, Florida 33064</td>
+			</tr>
+			<tr>
+				<td>10035</td>
+				<td>Thomas Fuentes</td>
+				<td>M</td>
+				<td>thomas.fuentes@gmail.com</td>
+				<td>864-261-5951</td>
+				<td>1974-08-29 00:00:00</td>
+				<td>2356 Mill Street, Anderson, South Carolina 29621</td>
+			</tr>
+			<tr>
+				<td>10036</td>
+				<td>Rosario Austin</td>
+				<td>F</td>
+				<td>rosario.austin@icloud.com</td>
+				<td>757-598-4080</td>
+				<td>1997-10-15 00:00:00</td>
+				<td>2983 Allison Avenue, Portsmouth, Virginia 23707</td>
+			</tr>
+			<tr>
+				<td>10037</td>
+				<td>Harold Funk</td>
+				<td>M</td>
+				<td>harold.funk@yahoo.com</td>
+				<td>781-234-6098</td>
+				<td>2000-06-30 00:00:00</td>
+				<td>4968 Wescam Court, Boston, Massachusetts 02110</td>
+			</tr>
+			<tr>
+				<td>10038</td>
+				<td>Vicky Drew</td>
+				<td>F</td>
+				<td>vicky.drew@gmail.com</td>
+				<td>601-537-9679</td>
+				<td>1979-07-02 00:00:00</td>
+				<td>1984 Lena Lane, Polkville, Mississippi 39117</td>
+			</tr>
+			<tr>
+				<td>10039</td>
+				<td>Roger Watts</td>
+				<td>M</td>
+				<td>roger.watts@outlook.com</td>
+				<td>508-438-8849</td>
+				<td>1993-01-01 00:00:00</td>
+				<td>1948 Ferguson Street, Springfield, Massachusetts 01109</td>
+			</tr>
+			<tr>
+				<td>10040</td>
+				<td>Sandi Patton</td>
+				<td>F</td>
+				<td>sandi.patton@yahoo.com</td>
+				<td>248-210-7837</td>
+				<td>1976-07-15 00:00:00</td>
+				<td>1635 Bobcat Drive, Detroit, Michigan 48226</td>
+			</tr>
+			<tr>
+				<td>10041</td>
+				<td>Louis Chang</td>
+				<td>M</td>
+				<td>louis.chang@gmail.com</td>
+				<td>309-354-8512</td>
+				<td>1980-12-17 00:00:00</td>
+				<td>3229 Coburn Hollow Road, Tuba City, Arizona 86045</td>
+			</tr>
+			<tr>
+				<td>10042</td>
+				<td>Andrea Estrada</td>
+				<td>F</td>
+				<td>andrea.estrada@icloud.com</td>
+				<td>724-868-6519</td>
+				<td>1982-06-04 00:00:00</td>
+				<td>1009 Spruce Drive, Newark, Missouri 63458</td>
+			</tr>
+			<tr>
+				<td>10043</td>
+				<td>Ali Shaffer</td>
+				<td>M</td>
+				<td>ali.shaffer@yahoo.com</td>
+				<td>515-378-3767</td>
+				<td>1973-03-13 00:00:00</td>
+				<td>881 Hazelwood Avenue, Thor, Iowa 50591</td>
+			</tr>
+			<tr>
+				<td>10044</td>
+				<td>Jeanne Richardson</td>
+				<td>F</td>
+				<td>jeanne.richardson@gmail.com</td>
+				<td>337-596-3010</td>
+				<td>1985-08-06 00:00:00</td>
+				<td>2438 Bridge Avenue, Tampa, Florida 33625</td>
+			</tr>
+			<tr>
+				<td>10045</td>
+				<td>Hugh Maynard</td>
+				<td>M</td>
+				<td>hugh.maynard@outlook.com</td>
+				<td>706-424-5581</td>
+				<td>2000-03-28 00:00:00</td>
+				<td>4085 Limer Street, Howard Lake, Minnesota 55349</td>
+			</tr>
+			<tr>
+				<td>10046</td>
+				<td>Jane Beard</td>
+				<td>F</td>
+				<td>jane.beard@yahoo.com</td>
+				<td>205-978-9562</td>
+				<td>1998-11-25 00:00:00</td>
+				<td>3498 Wright Court, Vestavia Hills, Alabama 35216</td>
+			</tr>
+			<tr>
+				<td>10047</td>
+				<td>Kirk Sampson</td>
+				<td>M</td>
+				<td>kirk.sampson@gmail.com</td>
+				<td>630-899-0974</td>
+				<td>1983-06-20 00:00:00</td>
+				<td>1257 Lewis Street, Schaumburg, Illinois 60173</td>
+			</tr>
+			<tr>
+				<td>10048</td>
+				<td>Brenda Ward</td>
+				<td>F</td>
+				<td>brenda.ward@icloud.com</td>
+				<td>419-465-2341</td>
+				<td>2000-12-10 00:00:00</td>
+				<td>1682 Cedarstone Drive, Monroeville, Ohio 44847</td>
+			</tr>
+			<tr>
+				<td>10049</td>
+				<td>Troy Hood</td>
+				<td>M</td>
+				<td>troy.hood@yahoo.com</td>
+				<td>847-591-3491</td>
+				<td>1980-02-24 00:00:00</td>
+				<td>1370 Thomas Street, Winnetka, Illinois 60093</td>
+			</tr>
+			<tr>
+				<td>10050</td>
+				<td>Myrna Small</td>
+				<td>F</td>
+				<td>myrna.small@gmail.com</td>
+				<td>646-821-0791</td>
+				<td>1985-11-13 00:00:00</td>
+				<td>1688 Forest Avenue, Haines, Oregon 97833</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr><br>
+	
+	<h3>STORES</h3>
+	<table class=a>
+		<thead>
+			<tr>
+				<th>STORE_ID</th>
+				<th>LOCATION</th>
+				<th>REGION</th>
+				<th>MANAGER</th>
+				<th>STORE_TARGET</th>
+				<th>STORE_SALES</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>51</td>
+				<td>Detroit</td>
+				<td>Northern</td>
+				<td>4</td>
+				<td>8700000.00</td>
+				<td>9387206.25</td>
+			</tr>
+			<tr>
+				<td>52</td>
+				<td>Chicago</td>
+				<td>Midwestern</td>
+				<td>7</td>
+				<td>9500000.00</td>
+				<td>10236548.75</td>
+			</tr>
+			<tr>
+				<td>53</td>
+				<td>New York</td>
+				<td>Eastern</td>
+				<td>10</td>
+				<td>12000000.00</td>
+				<td>13587423.30</td>
+			</tr>
+			<tr>
+				<td>54</td>
+				<td>Los Angeles</td>
+				<td>Western</td>
+				<td>6</td>
+				<td>8000000.00</td>
+				<td>7654321.50</td>
+			</tr>
+			<tr>
+				<td>55</td>
+				<td>Dallas</td>
+				<td>Southern</td>
+				<td>5</td>
+				<td>7000000.00</td>
+				<td>7521309.80</td>
+			</tr>
+			<tr>
+				<td>56</td>
+				<td>Denver</td>
+				<td>Midwestern</td>
+				<td>8</td>
+				<td>8500000.00</td>
+				<td>9201567.40</td>
+			</tr>
+			<tr>
+				<td>57</td>
+				<td>Miami</td>
+				<td>Southern</td>
+				<td>3</td>
+				<td>6000000.00</td>
+				<td>5543120.25</td>
+			</tr>
+			<tr>
+				<td>58</td>
+				<td>Seattle</td>
+				<td>Western</td>
+				<td>9</td>
+				<td>9500000.00</td>
+				<td>10324589.60</td>
+			</tr>
+			<tr>
+				<td>59</td>
+				<td>Boston</td>
+				<td>Eastern</td>
+				<td>11</td>
+				<td>11000000.00</td>
+				<td>11876234.75</td>
+			</tr>
+			<tr>
+				<td>60</td>
+				<td>Phoenix</td>
+				<td>Western</td>
+				<td>2</td>
+				<td>7200000.00</td>
+				<td>7890123.45</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr><br>
+	
+	<h3>EMPLOYEES</h3>
+	<table class=a>
+        <thead>
+            <tr>
+                <th>EMP_ID</th>
+                <th>FL_NAME</th>
+                <th>AGE</th>
+                <th>STORE</th>
+                <th>TITLE</th>
+                <th>PHONE_AREA</th>
+                <th>PHONE_NUM</th>
+                <th>PHONE_EXT</th>
+                <th>HIRE_DATE</th>
+                <th>SUPERVISOR</th>
+                <th>EMP_TARGET</th>
+                <th>EMP_SALES</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Damien Fletcher</td>
+                <td>44</td>
+                <td>56</td>
+                <td>Chief Marketing Officer (CMO)</td>
+                <td>303</td>
+                <td>954-6746</td>
+                <td>5601</td>
+                <td>2012-10-30 00:00:00</td>
+                <td>NULL</td>
+                <td>1240000.00</td>
+                <td>1426987.46</td>
+            </tr>
+			<tr>
+                <td>2</td>
+                <td>Rachel Floyd</td>
+                <td>46</td>
+                <td>60</td>
+                <td>Vice President of Sales</td>
+                <td>213</td>
+                <td>436-7550</td>
+                <td>5401</td>
+                <td>2010-07-21 00:00:00</td>
+                <td>NULL</td>
+                <td>1800000.00</td>
+                <td>2106791.54</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Steven Fields</td>
+                <td>41</td>
+                <td>57</td>
+                <td>Director of Marketing Strategy</td>
+                <td>872</td>
+                <td>742-6395</td>
+                <td>5202</td>
+                <td>2013-04-16 00:00:00</td>
+                <td>1</td>
+                <td>870000.00</td>
+                <td>920467.59</td>
+            </tr>
+			<tr>
+                <td>4</td>
+                <td>Julian Davenport</td>
+                <td>42</td>
+                <td>51</td>
+                <td>Director of Sales Operations</td>
+                <td>206</td>
+                <td>233-7133</td>
+                <td>5803</td>
+                <td>2014-12-05 00:00:00</td>
+                <td>2</td>
+                <td>972000.00</td>
+                <td>991439.62</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Chris Houston</td>
+                <td>38</td>
+                <td>55</td>
+                <td>Brand Manager</td>
+                <td>617</td>
+                <td>632-5628</td>
+                <td>5904</td>
+                <td>2024-06-01 00:00:00</td>
+                <td>1</td>
+                <td>735000.00</td>
+                <td>773464.21</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Anaya Cochran</td>
+                <td>35</td>
+                <td>54</td>
+                <td>Sales Manager</td>
+                <td>214</td>
+                <td>774-4491</td>
+                <td>5504</td>
+                <td>2010-08-13 00:00:00</td>
+                <td>2</td>
+                <td>861000.00</td>
+                <td>761673.50</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Josie Gilmore</td>
+                <td>34</td>
+                <td>52</td>
+                <td>Marketing Communications Manager</td>
+                <td>602</td>
+                <td>851-6824</td>
+                <td>6005</td>
+                <td>2012-05-21 00:00:00</td>
+                <td>1</td>
+                <td>721000.00</td>
+                <td>736190.41</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Tiago Nunez</td>
+                <td>39</td>
+                <td>56</td>
+                <td>Retail Sales Supervisor</td>
+                <td>212</td>
+                <td>283-7740</td>
+                <td>5307</td>
+                <td>2015-02-28 00:00:00</td>
+                <td>6</td>
+                <td>679000.00</td>
+                <td>692430.47</td>
+            </tr>
+            <tr>
+				<td>9</td>
+                <td>Jensen Maxwell</td>
+                <td>33</td>
+                <td>58</td>
+                <td>E-commerce Manager</td>
+                <td>305</td>
+                <td>304-4176</td>
+                <td>5706</td>
+                <td>2014-09-06 00:00:00</td>
+                <td>2</td>
+                <td>621000.00</td>
+                <td>561874.61</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>Nicole James</td>
+                <td>32</td>
+                <td>53</td>
+                <td>Social Media Marketing Specialist</td>
+                <td>213</td>
+                <td>910-4553</td>
+                <td>5408</td>
+                <td>2018-01-04 00:00:00</td>
+                <td>3</td>
+                <td>546000.00</td>
+                <td>486349.34</td>
+            </tr>
+			<tr>
+				<td>11</td>
+				<td>Myla Ali</td>
+				<td>37</td>
+				<td>59</td>
+				<td>Account Executive</td>
+				<td>212</td>
+				<td>942-5521</td>
+				<td>5305</td>
+				<td>2016-08-15 00:00:00</td>
+				<td>6</td>
+				<td>607000.00</td>
+				<td>697361.89</td>
+			</tr>
+			<tr>
+				<td>12</td>
+				<td>Olive Nelson</td>
+				<td>30</td>
+				<td>55</td>
+				<td>Public Relations Coordinator</td>
+				<td>214</td>
+				<td>486-9828</td>
+				<td>5506</td>
+				<td>2017-07-12 00:00:00</td>
+				<td>7</td>
+				<td>573000.00</td>
+				<td>668150.52</td>
+			</tr>
+			<tr>
+				<td>13</td>
+				<td>Leah Pennington</td>
+				<td>32</td>
+				<td>52</td>
+				<td>Merchandising Analyst</td>
+				<td>872</td>
+				<td>599-0323</td>
+				<td>5205</td>
+				<td>2016-12-18 00:00:00</td>
+				<td>5</td>
+				<td>594000.00</td>
+				<td>762408.49</td>
+			</tr>
+			<tr>
+				<td>14</td>
+				<td>Findlay Jenkins</td>
+				<td>34</td>
+				<td>51</td>
+				<td>Sales Support Specialist</td>
+				<td>313</td>
+				<td>876-3411</td>
+				<td>5108</td>
+				<td>2019-10-02 00:00:00</td>
+				<td>6</td>
+				<td>468000.00</td>
+				<td>561982.67</td>
+			</tr>
+			<tr>
+				<td>15</td>
+				<td>Theodore York</td>
+				<td>38</td>
+				<td>56</td>
+				<td>Content Marketing Coordinator</td>
+				<td>303</td>
+				<td>370-7352</td>
+				<td>5609</td>
+				<td>2020-06-09 00:00:00</td>
+				<td>3</td>
+				<td>496000.00</td>
+				<td>546503.79</td>
+			</tr>
+			<tr>
+				<td>16</td>
+				<td>Kaitlin Tucker</td>
+				<td>36</td>
+				<td>57</td>
+				<td>Visual Merchandising Manager</td>
+				<td>305</td>
+				<td>436-9395</td>
+				<td>5710</td>
+				<td>2017-09-21 00:00:00</td>
+				<td>5</td>
+				<td>438000.00</td>
+				<td>676412.38</td>
+			</tr>
+			<tr>
+				<td>17</td>
+				<td>Scott Leon</td>
+				<td>41</td>
+				<td>59</td>
+				<td>Customer Relationship Manager</td>
+				<td>617</td>
+				<td>866-4331</td>
+				<td>5904</td>
+				<td>2013-07-01 00:00:00</td>
+				<td>2</td>
+				<td>426000.00</td>
+				<td>346378.91</td>
+			</tr>
+			<tr>
+				<td>18</td>
+				<td>Casey Malone</td>
+				<td>29</td>
+				<td>NULL</td>
+				<td>Digital Marketing Specialist (Remote)</td>
+				<td>212</td>
+				<td>820-8649</td>
+				<td>5325</td>
+				<td>2020-12-07 00:00:00</td>
+				<td>3</td>
+				<td>379000.00</td>
+				<td>476413.37</td>
+			</tr>
+			<tr>
+				<td>19</td>
+				<td>Amber Schultz</td>
+				<td>27</td>
+				<td>58</td>
+				<td>Sales Associate</td>
+				<td>206</td>
+				<td>781-5084</td>
+				<td>5816</td>
+				<td>2022-05-08 00:00:00</td>
+				<td>8</td>
+				<td>299000.00</td>
+				<td>378315.82</td>
+			</tr>
+			<tr>
+				<td>20</td>
+				<td>Scarlett Sanders</td>
+				<td>28</td>
+				<td>56</td>
+				<td>Marketing Assistant</td>
+				<td>303</td>
+				<td>769-9919</td>
+				<td>5629</td>
+				<td>2021-12-21 00:00:00</td>
+				<td>7</td>
+				<td>263000.00</td>
+				<td>343705.73</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr><br>
+	
+	<h3>PRODUCTS</h3>
+	<table class=a>
+        <thead>
+            <tr>
+                <th>MAN_ID</th>
+                <th>PROD_ID</th>
+                <th>CATEGORY</th>
+                <th>STYLE</th>
+                <th>COLOR</th>
+                <th>SIZE</th>
+                <th>PRICE</th>
+                <th>AV_QUANT</th>
+            </tr>
+		</thead>
+		<tbody>
+			<tr>
+                <td>AWY</td>
+                <td>29AH</td>
+                <td>Jeans</td>
+                <td>Slim Fit</td>
+                <td>Black</td>
+                <td>32x34</td>
+                <td>49.99</td>
+                <td>150</td>
+            </tr>
+			<tr>
+				<td>AWY</td>
+				<td>29AK</td>
+				<td>Sweater</td>
+				<td>Crew Neck</td>
+				<td>Gray</td>
+				<td>S</td>
+				<td>59.99</td>
+				<td>140</td>
+			</tr>
+			<tr>
+				<td>AWY</td>
+				<td>29AL</td>
+				<td>Sweatpants</td>
+				<td>Jogger</td>
+				<td>Black</td>
+				<td>M</td>
+				<td>44.99</td>
+				<td>160</td>
+			</tr>
+			<tr>
+				<td>AWY</td>
+				<td>29AM</td>
+				<td>Watch</td>
+				<td>Digital</td>
+				<td>Silver</td>
+				<td>NULL</td>
+				<td>69.99</td>
+				<td>60</td>
+			</tr>
+			<tr>
+				<td>AWY</td>
+				<td>29AO</td>
+				<td>Sunglasses</td>
+				<td>Aviator</td>
+				<td>Black</td>
+				<td>NULL</td>
+				<td>29.99</td>
+				<td>130</td>
+			</tr>
+			<tr>
+				<td>BPL</td>
+				<td>701</td>
+				<td>T-Shirt</td>
+				<td>Casual</td>
+				<td>Blue</td>
+				<td>M</td>
+				<td>19.99</td>
+				<td>150</td>
+			</tr>
+			<tr>
+				<td>BPL</td>
+				<td>702</td>
+				<td>Shorts</td>
+				<td>Sports</td>
+				<td>Gray</td>
+				<td>XL</td>
+				<td>24.99</td>
+				<td>95</td>
+			</tr>
+			<tr>
+				<td>BPL</td>
+				<td>703</td>
+				<td>Tie</td>
+				<td>Silk</td>
+				<td>Navy</td>
+				<td>NULL</td>
+				<td>19.99</td>
+				<td>170</td>
+			</tr>
+			<tr>
+				<td>BPL</td>
+				<td>704</td>
+				<td>Jacket</td>
+				<td>Leather</td>
+				<td>Brown</td>
+				<td>XL</td>
+				<td>129.99</td>
+				<td>150</td>
+			</tr>
+			<tr>
+				<td>LRF</td>
+				<td>9001</td>
+				<td>Dress Shirt</td>
+				<td>Classic</td>
+				<td>White</td>
+				<td>L</td>
+				<td>39.99</td>
+				<td>120</td>
+			</tr>
+			<tr>
+				<td>LRF</td>
+				<td>9002</td>
+				<td>Boots</td>
+				<td>Ankle</td>
+				<td>Black</td>
+				<td>7</td>
+				<td>89.99</td>
+				<td>380</td>
+			</tr>
+			<tr>
+				<td>LRF</td>
+				<td>9003</td>
+				<td>Sandals</td>
+				<td>Flip-Flop</td>
+				<td>Brown</td>
+				<td>8</td>
+				<td>19.99</td>
+				<td>110</td>
+			</tr>
+			<tr>
+				<td>LRF</td>
+				<td>9004</td>
+				<td>Blouse</td>
+				<td>Flowy</td>
+				<td>Pink</td>
+				<td>S</td>
+				<td>34.99</td>
+				<td>185</td>
+			</tr>
+			<tr>
+				<td>FJD</td>
+				<td>55AA</td>
+				<td>Sneakers</td>
+				<td>Running</td>
+				<td>Red</td>
+				<td>9</td>
+				<td>79.99</td>
+				<td>125</td>
+			</tr>
+			<tr>
+				<td>FJD</td>
+				<td>55AB</td>
+				<td>Hoodie</td>
+				<td>Zip-Up</td>
+				<td>Blue</td>
+				<td>L</td>
+				<td>49.99</td>
+				<td>110</td>
+			</tr>
+			<tr>
+				<td>FJD</td>
+				<td>55AC</td>
+				<td>Gloves</td>
+				<td>Winter</td>
+				<td>Gray</td>
+				<td>L</td>
+				<td>14.99</td>
+				<td>130</td>
+			</tr>
+			<tr>
+				<td>FJD</td>
+				<td>55AD</td>
+				<td>Backpack</td>
+				<td>Casual</td>
+				<td>Blue</td>
+				<td>NULL</td>
+				<td>39.99</td>
+				<td>40</td>
+			</tr>
+			<tr>
+				<td>ISE</td>
+				<td>1001</td>
+				<td>Skirt</td>
+				<td>A-Line</td>
+				<td>Green</td>
+				<td>M</td>
+				<td>29.99</td>
+				<td>180</td>
+			</tr>
+			<tr>
+				<td>ISE</td>
+				<td>1002</td>
+				<td>Hat</td>
+				<td>Baseball</td>
+				<td>Red</td>
+				<td>NULL</td>
+				<td>14.99</td>
+				<td>90</td>
+			</tr>
+			<tr>
+				<td>ISE</td>
+				<td>1003</td>
+				<td>Scarf</td>
+				<td>Knit</td>
+				<td>Purple</td>
+				<td>NULL</td>
+				<td>22.99</td>
+				<td>65</td>
+			</tr>
+			<tr>
+				<td>XTM</td>
+				<td>RX01</td>
+				<td>T-Shirt</td>
+				<td>V-Neck</td>
+				<td>White</td>
+				<td>L</td>
+				<td>29.99</td>
+				<td>100</td>
+			</tr>
+			<tr>
+				<td>XTM</td>
+				<td>RX02</td>
+				<td>Jeans</td>
+				<td>Straight Fit</td>
+				<td>Blue</td>
+				<td>34x32</td>
+				<td>59.99</td>
+				<td>80</td>
+			</tr>
+			<tr>
+				<td>XTM</td>
+				<td>RX03</td>
+				<td>Sneakers</td>
+				<td>High Top</td>
+				<td>Black</td>
+				<td>9</td>
+				<td>79.99</td>
+				<td>50</td>
+			</tr>
+			<tr>
+				<td>XTM</td>
+				<td>RX04</td>
+				<td>Dress Shirt</td>
+				<td>Slim Fit</td>
+				<td>Light Blue</td>
+				<td>M</td>
+				<td>39.99</td>
+				<td>120</td>
+			</tr>
+			<tr>
+				<td>JHR</td>
+				<td>401</td>
+				<td>Dress</td>
+				<td>Formal</td>
+				<td>Black</td>
+				<td>M</td>
+				<td>79.99</td>
+				<td>60</td>
+			</tr>
+			<tr>
+				<td>JHR</td>
+				<td>402</td>
+				<td>Blazer</td>
+				<td>Slim Fit</td>
+				<td>Gray</td>
+				<td>L</td>
+				<td>89.99</td>
+				<td>40</td>
+			</tr>
+			<tr>
+				<td>MGY</td>
+				<td>US01</td>
+				<td>Sweatshirt</td>
+				<td>Hooded</td>
+				<td>Navy</td>
+				<td>XL</td>
+				<td>44.99</td>
+				<td>120</td>
+			</tr>
+			<tr>
+				<td>MGY</td>
+				<td>US02</td>
+				<td>Pants</td>
+				<td>Chino</td>
+				<td>Beige</td>
+				<td>32x30</td>
+				<td>34.99</td>
+				<td>150</td>
+			</tr>
+			<tr>
+				<td>OPQ</td>
+				<td>SW01</td>
+				<td>Swimsuit</td>
+				<td>One-Piece</td>
+				<td>Turquoise</td>
+				<td>L</td>
+				<td>69.99</td>
+				<td>80</td>
+			</tr>
+			<tr>
+				<td>OPQ</td>
+				<td>SW02</td>
+				<td>Board Shorts</td>
+				<td>Printed</td>
+				<td>Orange</td>
+				<td>32</td>
+				<td>54.99</td>
+				<td>50</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr><br>
+	<h3>ORDERS</h3>
+	<table class=a>
+		<thead>
+			<tr>
+				<th>ORDER_NUM</th>
+				<th>ORDER_DATE</th>
+				<th>CUST_NUM</th>
+				<th>ORD_STORE</th>
+				<th>MAN</th>
+				<th>PROD</th>
+				<th>QUANT</th>
+				<th>ORD_PRICE</th>
+				<th>ORDER_STATUS</th>
+				<th>SHIP_ADDR</th>
+				<th>PAYMENT_METHOD</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>500001</td>
+				<td>2020-03-15 12:45:24</td>
+				<td>10005</td>
+				<td>52</td>
+				<td>AWY</td>
+				<td>29AH</td>
+				<td>5</td>
+				<td>249.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>QR Code</td>
+			</tr>
+			<tr>
+				<td>500002</td>
+				<td>2019-07-22 16:31:20</td>
+				<td>10018</td>
+				<td>57</td>
+				<td>BPL</td>
+				<td>703</td>
+				<td>7</td>
+				<td>139.93</td>
+				<td>Delivered</td>
+				<td>3646 Southern Avenue, Thayer, Iowa 50254</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500003</td>
+				<td>2018-11-10 18:34:56</td>
+				<td>10031</td>
+				<td>55</td>
+				<td>LRF</td>
+				<td>9002</td>
+				<td>9</td>
+				<td>809.91</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Debit Card</td>
+			</tr>
+			<tr>
+				<td>500004</td>
+				<td>2020-01-05 02:53:48</td>
+				<td>10012</td>
+				<td>51</td>
+				<td>XTM</td>
+				<td>RX01</td>
+				<td>6</td>
+				<td>179.94</td>
+				<td>Delivered</td>
+				<td>416 Gladwell Street, Sherman, Texas 75090</td>
+				<td>Cash on Delivery (COD)</td>
+			</tr>
+			<tr>
+				<td>500005</td>
+				<td>2022-04-18 17:35:46</td>
+				<td>10049</td>
+				<td>58</td>
+				<td>FJD</td>
+				<td>55AC</td>
+				<td>8</td>
+				<td>119.92</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500006</td>
+				<td>2020-12-01 19:42:57</td>
+				<td>10025</td>
+				<td>59</td>
+				<td>MGY</td>
+				<td>US01</td>
+				<td>10</td>
+				<td>449.90</td>
+				<td>Returned</td>
+				<td>1048 Coulter Lane, Richmond, Virginia 23222</td>
+				<td>Debit Card</td>
+			</tr>
+			<tr>
+				<td>500007</td>
+				<td>2022-09-09 00:25:36</td>
+				<td>10041</td>
+				<td>53</td>
+				<td>JHR</td>
+				<td>401</td>
+				<td>5</td>
+				<td>399.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cash</td>
+			</tr>
+			<tr>
+				<td>500008</td>
+				<td>2023-12-30 10:36:24</td>
+				<td>10037</td>
+				<td>54</td>
+				<td>FJD</td>
+				<td>55AD</td>
+				<td>6</td>
+				<td>239.94</td>
+				<td>Shipped</td>
+				<td>4968 Wescam Court, Boston, Massachusetts 02110</td>
+				<td>Samsung Pay</td>
+			</tr>
+			<tr>
+				<td>500009</td>
+				<td>2019-12-12 07:12:54</td>
+				<td>10010</td>
+				<td>56</td>
+				<td>XTM</td>
+				<td>RX02</td>
+				<td>4</td>
+				<td>239.96</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500010</td>
+				<td>2016-08-27 08:54:21</td>
+				<td>10022</td>
+				<td>52</td>
+				<td>ISE</td>
+				<td>1003</td>
+				<td>7</td>
+				<td>160.93</td>
+				<td>Cancelled</td>
+				<td>2 Haven Lane, Hillsdale, Michigan 49242</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500011</td>
+				<td>2017-06-14 14:28:03</td>
+				<td>10046</td>
+				<td>55</td>
+				<td>FJD</td>
+				<td>55AB</td>
+				<td>5</td>
+				<td>249.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>NFC</td>
+			</tr>
+			<tr>
+				<td>500012</td>
+				<td>2024-01-10 18:09:47</td>
+				<td>10035</td>
+				<td>57</td>
+				<td>BPL</td>
+				<td>701</td>
+				<td>9</td>
+				<td>179.91</td>
+				<td>Pending</td>
+				<td>2356 Mill Street, Anderson, South Carolina 29621</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500013</td>
+				<td>2014-11-20 09:42:15</td>
+				<td>10029</td>
+				<td>51</td>
+				<td>ISE</td>
+				<td>1002</td>
+				<td>6</td>
+				<td>209.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500014</td>
+				<td>2015-06-08 21:15:36</td>
+				<td>10003</td>
+				<td>58</td>
+				<td>LRF</td>
+				<td>9003</td>
+				<td>8</td>
+				<td>559.92</td>
+				<td>Cancelled</td>
+				<td>4285 Henery Street, Wibaux, Montana 59353</td>
+				<td>Microsoft Wallet</td>
+			</tr>
+			<tr>
+				<td>500015</td>
+				<td>2021-08-17 12:03:28</td>
+				<td>10038</td>
+				<td>59</td>
+				<td>MGY</td>
+				<td>US02</td>
+				<td>14</td>
+				<td>489.86</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Apple Pay</td>
+			</tr>
+			<tr>
+				<td>500016</td>
+				<td>2017-05-25 15:48:09</td>
+				<td>10015</td>
+				<td>50</td>
+				<td>JHR</td>
+				<td>402</td>
+				<td>5</td>
+				<td>449.95</td>
+				<td>Delivered</td>
+				<td>3214 Maryland Avenue, Feather Sound, Florida 34622</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500017</td>
+				<td>2023-02-12 08:37:56</td>
+				<td>10043</td>
+				<td>53</td>
+				<td>FJD</td>
+				<td>55AA</td>
+				<td>6</td>
+				<td>479.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Bank Transfer</td>
+			</tr>
+			<tr>
+				<td>500018</td>
+				<td>2023-12-29 17:12:44</td>
+				<td>10028</td>
+				<td>54</td>
+				<td>XTM</td>
+				<td>RX01</td>
+				<td>8</td>
+				<td>239.92</td>
+				<td>Shipped</td>
+				<td>3962 Dale Avenue, Tacoma, Washington 98402</td>
+				<td>Cash on Delivery (COD)</td>
+			</tr>
+			<tr>
+				<td>500019</td>
+				<td>2017-07-07 11:59:18</td>
+				<td>10017</td>
+				<td>56</td>
+				<td>OPQ</td>
+				<td>SW01</td>
+				<td>12</td>
+				<td>839.88</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Google Pay</td>
+			</tr>
+			<tr>
+				<td>500020</td>
+				<td>2023-12-19 14:27:03</td>
+				<td>10009</td>
+				<td>52</td>
+				<td>ISE</td>
+				<td>1001</td>
+				<td>7</td>
+				<td>209.93</td>
+				<td>Processing</td>
+				<td>1421 Huntz Lane, San Francisco, California 94107</td>
+				<td>Apple Pay</td>
+			</tr>
+			<tr>
+				<td>500021</td>
+				<td>2012-10-08 19:04:37</td>
+				<td>10019</td>
+				<td>57</td>
+				<td>LRF</td>
+				<td>9001</td>
+				<td>4</td>
+				<td>159.96</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cash</td>
+			</tr>
+			<tr>
+				<td>500022</td>
+				<td>2011-03-26 07:18:52</td>
+				<td>10032</td>
+				<td>58</td>
+				<td>BPL</td>
+				<td>702</td>
+				<td>6</td>
+				<td>149.94</td>
+				<td>Refunded</td>
+				<td>2155 Twin Willow Lane, Wilmington, North Carolina 28405</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500023</td>
+				<td>2021-07-13 22:50:09</td>
+				<td>10013</td>
+				<td>51</td>
+				<td>MGY</td>
+				<td>US01</td>
+				<td>8</td>
+				<td>359.92</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Venmo</td>
+			</tr>
+			<tr>
+				<td>500024</td>
+				<td>2023-12-04 10:13:27</td>
+				<td>10024</td>
+				<td>59</td>
+				<td>JHR</td>
+				<td>401</td>
+				<td>5</td>
+				<td>399.95</td>
+				<td>Backordered</td>
+				<td>444 Winifred Way, Charlotte, North Carolina 28212</td>
+				<td>Cash on Delivery (COD)</td>
+			</tr>
+			<tr>
+				<td>500025</td>
+				<td>2017-12-21 12:47:18</td>
+				<td>10033</td>
+				<td>60</td>
+				<td>FJD</td>
+				<td>55AB</td>
+				<td>10</td>
+				<td>499.90</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Samsung Pay</td>
+			</tr>
+			<tr>
+				<td>500026</td>
+				<td>2021-09-05 16:59:34</td>
+				<td>10036</td>
+				<td>53</td>
+				<td>ISE</td>
+				<td>1002</td>
+				<td>6</td>
+				<td>209.94</td>
+				<td>Delivered</td>
+				<td>2983 Allison Avenue, Portsmouth, Virginia 23707</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500027</td>
+				<td>2022-04-02 03:35:51</td>
+				<td>10045</td>
+				<td>54</td>
+				<td>XTM</td>
+				<td>RX02</td>
+				<td>15</td>
+				<td>899.85</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cash</td>
+			</tr>
+			<tr>
+				<td>500028</td>
+				<td>2017-12-20 22:59:06</td>
+				<td>10002</td>
+				<td>56</td>
+				<td>FJD</td>
+				<td>55AD</td>
+				<td>7</td>
+				<td>279.93</td>
+				<td>Delivered</td>
+				<td>3953 Village View Drive, Sturtevant, Wisconsin 53177</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500029</td>
+				<td>2016-07-10 09:20:23</td>
+				<td>10042</td>
+				<td>52</td>
+				<td>LRF</td>
+				<td>9003</td>
+				<td>4</td>
+				<td>91.96</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Bank Transfer</td>
+			</tr>
+			<tr>
+				<td>500030</td>
+				<td>2023-12-30 18:42:05</td>
+				<td>10047</td>
+				<td>57</td>
+				<td>AWY</td>
+				<td>29AM</td>
+				<td>18</td>
+				<td>1259.82</td>
+				<td>Shipped</td>
+				<td>1257 Lewis Street, Schaumburg, Illinois 60173</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500031</td>
+				<td>2015-06-17 08:14:52</td>
+				<td>10001</td>
+				<td>58</td>
+				<td>JHR</td>
+				<td>402</td>
+				<td>6</td>
+				<td>539.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Debit Card</td>
+			</tr>
+			<tr>
+				<td>500032</td>
+				<td>2014-03-05 13:29:37</td>
+				<td>10016</td>
+				<td>53</td>
+				<td>FJD</td>
+				<td>55AA</td>
+				<td>7</td>
+				<td>559.93</td>
+				<td>Cancelled</td>
+				<td>2396 West Street, Blissfield, Ohio 43805</td>
+				<td>Debit Card</td>
+			</tr>
+			<tr>
+				<td>500033</td>
+				<td>2021-08-02 16:08:30</td>
+				<td>10030</td>
+				<td>54</td>
+				<td>XTM</td>
+				<td>RX01</td>
+				<td>7</td>
+				<td>209.93</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cash</td>
+			</tr>
+			<tr>
+				<td>500034</td>
+				<td>2013-05-21 03:57:15</td>
+				<td>10044</td>
+				<td>55</td>
+				<td>BPL</td>
+				<td>701</td>
+				<td>4</td>
+				<td>79.96</td>
+				<td>Refunded</td>
+				<td>2438 Bridge Avenue, Tampa, Florida 33625</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500035</td>
+				<td>2022-02-15 20:51:00</td>
+				<td>10011</td>
+				<td>56</td>
+				<td>ISE</td>
+				<td>1003</td>
+				<td>5</td>
+				<td>114.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Apple Pay</td>
+			</tr>
+			<tr>
+				<td>500036</td>
+				<td>2016-11-10 21:35:45</td>
+				<td>10023</td>
+				<td>57</td>
+				<td>AWY</td>
+				<td>29AL</td>
+				<td>6</td>
+				<td>269.94</td>
+				<td>Delivered</td>
+				<td>4019 Clover Drive, Colorado Springs, Colorado 80918</td>
+				<td>Cash on Delivery (COD)</td>
+			</tr>
+			<tr>
+				<td>500037</td>
+				<td>2021-07-28 14:22:12</td>
+				<td>10048</td>
+				<td>51</td>
+				<td>MGY</td>
+				<td>US02</td>
+				<td>7</td>
+				<td>349.93</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cash</td>
+			</tr>
+			<tr>
+				<td>500038</td>
+				<td>2023-12-14 05:44:45</td>
+				<td>10007</td>
+				<td>52</td>
+				<td>FJD</td>
+				<td>55AB</td>
+				<td>8</td>
+				<td>399.92</td>
+				<td>Processing Error</td>
+				<td>601 Seltice Way, Hayden Lake, Idaho 83835</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500039</td>
+				<td>2017-10-01 15:07:23</td>
+				<td>10021</td>
+				<td>53</td>
+				<td>JHR</td>
+				<td>401</td>
+				<td>5</td>
+				<td>449.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cash</td>
+			</tr>
+			<tr>
+				<td>500040</td>
+				<td>2024-01-08 23:27:18</td>
+				<td>10014</td>
+				<td>54</td>
+				<td>LRF</td>
+				<td>9001</td>
+				<td>4</td>
+				<td>159.96</td>
+				<td>Partially Shipped</td>
+				<td>4757 New Creek Road, Williamsburg, Missouri 63388</td>
+				<td>Cash on Delivery (COD)</td>
+			</tr>
+			<tr>
+				<td>500041</td>
+				<td>2018-08-12 11:53:36</td>
+				<td>10039</td>
+				<td>55</td>
+				<td>ISE</td>
+				<td>1002</td>
+				<td>7</td>
+				<td>419.93</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>NFC</td>
+			</tr>
+			<tr>
+				<td>500042</td>
+				<td>2020-12-05 19:18:01</td>
+				<td>10005</td>
+				<td>56</td>
+				<td>XTM</td>
+				<td>RX02</td>
+				<td>8</td>
+				<td>479.92</td>
+				<td>Delivered</td>
+				<td>2362 Mount Olive Road, Roswell, Georgia 30076</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500043</td>
+				<td>2023-07-22 17:11:51</td>
+				<td>10018</td>
+				<td>57</td>
+				<td>BPL</td>
+				<td>703</td>
+				<td>6</td>
+				<td>269.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500044</td>
+				<td>2023-11-08 12:52:36</td>
+				<td>10031</td>
+				<td>58</td>
+				<td>LRF</td>
+				<td>9002</td>
+				<td>5</td>
+				<td>449.95</td>
+				<td>Failed Payment</td>
+				<td>615 Columbia Boulevard, Charlotte, North Carolina 28290</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500045</td>
+				<td>2020-11-28 09:06:56</td>
+				<td>10012</td>
+				<td>59</td>
+				<td>XTM</td>
+				<td>RX01</td>
+				<td>8</td>
+				<td>239.92</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Venmo</td>
+			</tr>
+			<tr>
+				<td>500046</td>
+				<td>2016-02-15 09:39:21</td>
+				<td>10049</td>
+				<td>60</td>
+				<td>FJD</td>
+				<td>55AC</td>
+				<td>13</td>
+				<td>194.87</td>
+				<td>Delivered</td>
+				<td>1370 Thomas Street, Winnetka, Illinois 60093</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500047</td>
+				<td>2021-06-30 18:17:05</td>
+				<td>10025</td>
+				<td>51</td>
+				<td>MGY</td>
+				<td>US01</td>
+				<td>6</td>
+				<td>269.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500048</td>
+				<td>2018-09-16 20:45:49</td>
+				<td>10041</td>
+				<td>52</td>
+				<td>ISE</td>
+				<td>1003</td>
+				<td>5</td>
+				<td>114.95</td>
+				<td>Delivered</td>
+				<td>3229 Coburn Hollow Road, Tuba City, Arizona 86045</td>
+				<td>Microsoft Wallet</td>
+			</tr>
+			<tr>
+				<td>500049</td>
+				<td>2023-05-03 22:30:34</td>
+				<td>10037</td>
+				<td>53</td>
+				<td>FJD</td>
+				<td>55AD</td>
+				<td>12</td>
+				<td>479.88</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500050</td>
+				<td>2019-01-15 08:53:12</td>
+				<td>10010</td>
+				<td>54</td>
+				<td>XTM</td>
+				<td>RX02</td>
+				<td>4</td>
+				<td>239.96</td>
+				<td>Cancelled</td>
+				<td>1341 Wines Lane, Houston, Texas 77027</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500051</td>
+				<td>2022-08-31 06:14:28</td>
+				<td>10022</td>
+				<td>55</td>
+				<td>AWY</td>
+				<td>29AH</td>
+				<td>6</td>
+				<td>299.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500052</td>
+				<td>2023-12-20 09:09:16</td>
+				<td>10019</td>
+				<td>56</td>
+				<td>LRF</td>
+				<td>9003</td>
+				<td>7</td>
+				<td>160.93</td>
+				<td>Shipped</td>
+				<td>3593 Pennsylvania Avenue, Harrisburg, Pennsylvania 17108</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500053</td>
+				<td>2022-01-06 03:29:56</td>
+				<td>10032</td>
+				<td>57</td>
+				<td>BPL</td>
+				<td>702</td>
+				<td>8</td>
+				<td>719.92</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Debit Card</td>
+			</tr>
+			<tr>
+				<td>500054</td>
+				<td>2019-09-13 04:05:45</td>
+				<td>10013</td>
+				<td>58</td>
+				<td>ISE</td>
+				<td>1002</td>
+				<td>9</td>
+				<td>314.91</td>
+				<td>Delivered</td>
+				<td>1444 Traders Alley, Kansas City, Missouri 64106</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500055</td>
+				<td>2022-05-10 07:46:38</td>
+				<td>10035</td>
+				<td>59</td>
+				<td>MGY</td>
+				<td>US02</td>
+				<td>6</td>
+				<td>539.94</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Google Pay</td>
+			</tr>
+			<tr>
+				<td>500056</td>
+				<td>2021-12-27 12:23:29</td>
+				<td>10038</td>
+				<td>60</td>
+				<td>JHR</td>
+				<td>401</td>
+				<td>4</td>
+				<td>319.96</td>
+				<td>Refunded</td>
+				<td>1984 Lena Lane, Polkville, Mississippi 39117</td>
+				<td>Debit Card</td>
+			</tr>
+			<tr>
+				<td>500057</td>
+				<td>2021-09-23 15:38:17</td>
+				<td>10009</td>
+				<td>51</td>
+				<td>FJD</td>
+				<td>55AA</td>
+				<td>7</td>
+				<td>559.93</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500058</td>
+				<td>2012-06-08 10:01:04</td>
+				<td>10026</td>
+				<td>52</td>
+				<td>XTM</td>
+				<td>RX01</td>
+				<td>10</td>
+				<td>299.90</td>
+				<td>Delivered</td>
+				<td>647 Monroe Street, Houston, Texas 77016</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500059</td>
+				<td>2013-03-25 18:53:51</td>
+				<td>10045</td>
+				<td>53</td>
+				<td>ISE</td>
+				<td>1003</td>
+				<td>5</td>
+				<td>114.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500060</td>
+				<td>2023-12-11 02:17:34</td>
+				<td>10040</td>
+				<td>54</td>
+				<td>AWY</td>
+				<td>29AM</td>
+				<td>14</td>
+				<td>979.86</td>
+				<td>Partially Shipped</td>
+				<td>1635 Bobcat Drive, Detroit, Michigan 48226</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500061</td>
+				<td>2017-03-04 06:45:19</td>
+				<td>10028</td>
+				<td>55</td>
+				<td>OPQ</td>
+				<td>SW02</td>
+				<td>7</td>
+				<td>349.93</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500062</td>
+				<td>2021-07-21 21:29:04</td>
+				<td>10015</td>
+				<td>56</td>
+				<td>BPL</td>
+				<td>703</td>
+				<td>8</td>
+				<td>159.92</td>
+				<td>Returned</td>
+				<td>3214 Maryland Avenue, Feather Sound, Florida 34622</td>
+				<td>Google Pay</td>
+			</tr>
+			<tr>
+				<td>500063</td>
+				<td>2019-01-09 09:00:33</td>
+				<td>10046</td>
+				<td>57</td>
+				<td>ISE</td>
+				<td>1002</td>
+				<td>5</td>
+				<td>299.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500064</td>
+				<td>2015-07-05 15:14:10</td>
+				<td>10004</td>
+				<td>58</td>
+				<td>JHR</td>
+				<td>402</td>
+				<td>4</td>
+				<td>359.96</td>
+				<td>Delivered</td>
+				<td>3106 Spadafore Drive, Altoona, Pennsylvania 16601</td>
+				<td>Cash on Delivery (COD)</td>
+			</tr>
+			<tr>
+				<td>500065</td>
+				<td>2020-04-29 11:36:22</td>
+				<td>10029</td>
+				<td>59</td>
+				<td>XTM</td>
+				<td>RX02</td>
+				<td>5</td>
+				<td>299.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500066</td>
+				<td>2022-10-15 18:10:07</td>
+				<td>10036</td>
+				<td>60</td>
+				<td>FJD</td>
+				<td>55AB</td>
+				<td>16</td>
+				<td>799.84</td>
+				<td>Delivered</td>
+				<td>2983 Allison Avenue, Portsmouth, Virginia 23707</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500067</td>
+				<td>2014-02-01 03:42:55</td>
+				<td>10024</td>
+				<td>51</td>
+				<td>ISE</td>
+				<td>1003</td>
+				<td>7</td>
+				<td>160.93</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Credit Card</td>
+			</tr>
+			<tr>
+				<td>500068</td>
+				<td>2021-08-17 08:19:11</td>
+				<td>10020</td>
+				<td>52</td>
+				<td>AWY</td>
+				<td>29AL</td>
+				<td>8</td>
+				<td>359.92</td>
+				<td>Returned</td>
+				<td>3109 Saint Marys Avenue, Syracuse, New York 13202</td>
+				<td>PayPal</td>
+			</tr>
+			<tr>
+				<td>500069</td>
+				<td>2018-05-12 14:48:56</td>
+				<td>10008</td>
+				<td>53</td>
+				<td>LRF</td>
+				<td>9002</td>
+				<td>5</td>
+				<td>449.95</td>
+				<td>In-Store</td>
+				<td>NULL</td>
+				<td>Cryptocurrencies</td>
+			</tr>
+			<tr>
+				<td>500070</td>
+				<td>2024-01-08 20:34:18</td>
+				<td>10033</td>
+				<td>54</td>
+				<td>BPL</td>
+				<td>701</td>
+				<td>12</td>
+				<td>239.88</td>
+				<td>Backordered</td>
+				<td>1639 Blane Street, Saint Louis, Missouri 63101</td>
+				<td>Apple Pay</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr><br>
+	
+	<h3>MANUFACTURERS</h3>
+	<table class=a>
+        <thead>
+            <tr>
+                <th>MANUF</th>
+                <th>MAN_NAME</th>
+                <th>CONT_PERSON</th>
+                <th>CONT_PERSON_MAIL</th>
+                <th>CONT_PERSON_PHONE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>AWY</td>
+                <td>Lenzing AG</td>
+                <td>Else Marinkovic</td>
+                <td>else.marinkovic@lenzing.com</td>
+                <td>+43 660-348-0310</td>
+            </tr>
+            <tr>
+                <td>BPL</td>
+                <td>Worn Again Technologies</td>
+                <td>Philippa Cox</td>
+                <td>philippa.cox@worn-again.co.uk</td>
+                <td>+44 775-556-6312</td>
+            </tr>
+            <tr>
+                <td>LRF</td>
+                <td>Klopman International</td>
+                <td>Elia Giannini</td>
+                <td>elia.giannini@klopman.com</td>
+                <td>+39 369-786-935</td>
+            </tr>
+            <tr>
+                <td>FJD</td>
+                <td>Albini Group</td>
+                <td>Silvestro Orlando</td>
+                <td>silvestro.orlando@albini-group.com</td>
+                <td>+39 335-145-291</td>
+            </tr>
+            <tr>
+                <td>ISE</td>
+                <td>Schoeller Textil AG</td>
+                <td>Ferdinand Bachmann</td>
+                <td>ferdinand.bachmann@schoeller-textil.com</td>
+                <td>+41 33-106-5908</td>
+            </tr>
+            <tr>
+                <td>XTM</td>
+                <td>Borges International Group</td>
+                <td>Hugo Egea</td>
+                <td>hugo.egea@borges.com</td>
+                <td>+34 858-610-733</td>
+            </tr>
+            <tr>
+                <td>JHR</td>
+                <td>Marzotto Group</td>
+                <td>Bianca Giordano</td>
+                <td>bianca.giordano@marzotto.com</td>
+                <td>+39 345-592-849</td>
+            </tr>
+            <tr>
+                <td>MGY</td>
+                <td>Gebrüder Otto</td>
+                <td>Lydia Mangold</td>
+                <td>lydia.magold@gebruder-otto.com</td>
+                <td>+49 30-245259373</td>
+            </tr>
+            <tr>
+                <td>OPQ</td>
+                <td>ITV Denkendorf Produktservice GmbH</td>
+                <td>Jolanta Behr</td>
+                <td>jolanta.behr@itv-denkendorf.com</td>
+                <td>+49 30-957501713</td>
+            </tr>
+            <tr>
+                <td>ARN</td>
+                <td>Holland & Sherry</td>
+                <td>Dylan Knight</td>
+                <td>dylan.knight@holland-sherry.co.uk</td>
+                <td>+44 1632-960644</td>
+            </tr>
+            <tr>
+                <td>HPS</td>
+                <td>Salvatore Ferragamo SpA</td>
+                <td>Karl Santoro</td>
+                <td>karl.santoro@salvatore-ferragamo.com</td>
+                <td>+39 316-845-1913</td>
+            </tr>
+            <tr>
+                <td>KTC</td>
+                <td>Koninklijke Ten Cate NV</td>
+                <td>Merel Hofland</td>
+                <td>merel.hofland@koninklijke-ten-cate.com</td>
+                <td>+31 71-991-2216</td>
+            </tr>
+            <tr>
+                <td>CTB</td>
+                <td>Chargeurs SA</td>
+                <td>Jean-Charles Ange</td>
+                <td>jeancharles.ange@chargeurs.com</td>
+                <td>+33 655-550-720</td>
+            </tr>
+            <tr>
+                <td>YFZ</td>
+                <td>Cyamopsis Biotech USA LLC</td>
+                <td>Alison Walls</td>
+                <td>alison.walls@cyamopsis.com</td>
+                <td>+1 409-990-5635</td>
+            </tr>
+            <tr>
+                <td>STO</td>
+                <td>Milliken & Company</td>
+                <td>Renee Meyers</td>
+                <td>renee.meyers@milliken.com</td>
+                <td>+1 442-443-3597</td>
+            </tr>
+            <tr>
+                <td>QRX</td>
+                <td>Hanesbrands Inc.</td>
+                <td>Marcy Humphrey</td>
+                <td>marcy.humphrey@hanesbrands.com</td>
+                <td>+1 719-731-3395</td>
+            </tr>
+            <tr>
+                <td>YND</td>
+                <td>Burlington Industries</td>
+                <td>Ian Davenport</td>
+                <td>ian.davenport@burlington.com</td>
+                <td>+1 315-332-1237</td>
+            </tr>
+            <tr>
+                <td>RFZ	</td>
+                <td>Glen Raven Inc.</td>
+                <td>Johnny Arnold</td>
+                <td>johnny.arnold@glen-raven.com</td>
+                <td>+1 408-656-6110</td>
+            </tr>
+            <tr>
+                <td>IFP</td>
+                <td>W.L. Gore & Associates</td>
+                <td>Lindsey Crowley</td>
+                <td>lindsey.crowley@w-l-gore.com</td>
+                <td>+1 857-423-6691</td>
+            </tr>
+            <tr>
+                <td>DYM</td>
+                <td>Culp Inc.</td>
+                <td>Sophia Roth</td>
+                <td>sophia.roth@culp.com</td>
+                <td>+1 640-591-0881</td>
+            </tr>
+        </tbody>
+    </table>
+	<hr><br>
+	
+	<h3>CAMPAIGNS</h3>
+	<table class=a>
+		<thead>
+			<tr>
+				<th>CAMP_ID</th>
+				<th>CAMP_NAME</th>
+				<th>CUST_NUMBER</th>
+				<th>START_DATE</th>
+				<th>END_DATE</th>
+				<th>AV_PRICE</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>2001</td>
+				<td>Summer Sale 2020</td>
+				<td>10010</td>
+				<td>2020-06-01 00:00:00</td>
+				<td>2020-08-31 23:59:59</td>
+				<td>800</td>
+			</tr>
+			<tr>
+				<td>2002</td>
+				<td>Back-to-School Promo</td>
+				<td>10022</td>
+				<td>2020-08-15 00:00:00</td>
+				<td>2020-09-30 23:59:59</td>
+				<td>500</td>
+			</tr>
+			<tr>
+				<td>2003</td>
+				<td>Holiday Extravaganza</td>
+				<td>10008</td>
+				<td>2020-11-01 00:00:00</td>
+				<td>2020-12-25 23:59:59</td>
+				<td>1000</td>
+			</tr>
+			<tr>
+				<td>2004</td>
+				<td>New Year, New Style</td>
+				<td>10027</td>
+				<td>2020-12-26 00:00:00</td>
+				<td>2021-01-31 23:59:59</td>
+				<td>600</td>
+			</tr>
+			<tr>
+				<td>2005</td>
+				<td>Spring Fashion Launch</td>
+				<td>10014</td>
+				<td>2021-03-01 00:00:00</td>
+				<td>2021-04-30 23:59:59</td>
+				<td>9000</td>
+			</tr>
+			<tr>
+				<td>2006</td>
+				<td>Memorial Day Clearance</td>
+				<td>10035</td>
+				<td>2021-05-25 00:00:00</td>
+				<td>2021-05-31 23:59:59</td>
+				<td>400</td>
+			</tr>
+			<tr>
+				<td>2007</td>
+				<td>Independence Day Sale</td>
+				<td>10020</td>
+				<td>2021-07-01 00:00:00</td>
+				<td>2021-07-05 23:59:59</td>
+				<td>600</td>
+			</tr>
+			<tr>
+				<td>2008</td>
+				<td>Fall Preview Event</td>
+				<td>10018</td>
+				<td>2021-08-15 00:00:00</td>
+				<td>2021-09-15 23:59:59</td>
+				<td>800</td>
+			</tr>
+			<tr>
+				<td>2009</td>
+				<td>Labor Day Weekend Sale</td>
+				<td>10041</td>
+				<td>2021-09-01 00:00:00</td>
+				<td>2021-09-07 23:59:59</td>
+				<td>400</td>
+			</tr>
+			<tr>
+				<td>2010</td>
+				<td>Fashion Frenzy Friday</td>
+				<td>10002</td>
+				<td>2021-11-01 00:00:00</td>
+				<td>2021-11-07 23:59:59</td>
+				<td>500</td>
+			</tr>
+			<tr>
+				<td>2011</td>
+				<td>Black Friday Bonanza</td>
+				<td>10048</td>
+				<td>2021-11-28 00:00:00</td>
+				<td>2021-11-30 23:59:59</td>
+				<td>1200</td>
+			</tr>
+			<tr>
+				<td>2012</td>
+				<td>Cyber Monday Madness</td>
+				<td>10004</td>
+				<td>2021-11-30 00:00:00</td>
+				<td>2021-12-01 23:59:59</td>
+				<td>900</td>
+			</tr>
+			<tr>
+				<td>2013</td>
+				<td>Holiday Gift Spectacular</td>
+				<td>10029</td>
+				<td>2021-12-10 00:00:00</td>
+				<td>2021-12-25 23:59:59</td>
+				<td>10000</td>
+			</tr>
+			<tr>
+				<td>2014</td>
+				<td>New Year, New Wardrobe</td>
+				<td>10013</td>
+				<td>2022-01-01 00:00:00</td>
+				<td>2022-01-31 23:59:59</td>
+				<td>6000</td>
+			</tr>
+			<tr>
+				<td>2015</td>
+				<td>Valentine's Day Romance</td>
+				<td>10023</td>
+				<td>2022-02-01 00:00:00</td>
+				<td>2022-02-14 23:59:59</td>
+				<td>4000</td>
+			</tr>
+			<tr>
+				<td>2016</td>
+				<td>Spring Style Revival</td>
+				<td>10026</td>
+				<td>2022-04-01 00:00:00</td>
+				<td>2022-04-30 23:59:59</td>
+				<td>6500</td>
+			</tr>
+			<tr>
+				<td>2017</td>
+				<td>Mother's Day Elegance</td>
+				<td>10011</td>
+				<td>2022-05-01 00:00:00</td>
+				<td>2022-05-10 23:59:59</td>
+				<td>4500</td>
+			</tr>
+			<tr>
+				<td>2018</td>
+				<td>Memorial Day Mega Sale</td>
+				<td>10046</td>
+				<td>2022-05-25 00:00:00</td>
+				<td>2022-05-31 23:59:59</td>
+				<td>5000</td>
+			</tr>
+			<tr>
+				<td>2019</td>
+				<td>Summer Sizzle Special</td>
+				<td>10033</td>
+				<td>2022-06-01 00:00:00</td>
+				<td>2022-08-31 23:59:59</td>
+				<td>12000</td>
+			</tr>
+			<tr>
+				<td>2020</td>
+				<td>Back-to-School Bliss</td>
+				<td>10007</td>
+				<td>2022-08-15 00:00:00</td>
+				<td>2022-09-30 23:59:59</td>
+				<td>8000</td>
+			</tr>
+			<tr>
+				<td>2021</td>
+				<td>Holiday Extravaganza</td>
+				<td>10008</td>
+				<td>2022-11-01 00:00:00</td>
+				<td>2022-12-25 23:59:59</td>
+				<td>10000</td>
+			</tr>
+			<tr>
+				<td>2022</td>
+				<td>New Year, New Style</td>
+				<td>10027</td>
+				<td>2023-01-01 00:00:00</td>
+				<td>2023-01-31 23:59:59</td>
+				<td>6000</td>
+			</tr>
+			<tr>
+				<td>2023</td>
+				<td>Spring Fashion Launch</td>
+				<td>10014</td>
+				<td>2023-03-01 00:00:00</td>
+				<td>2023-04-30 23:59:59</td>
+				<td>9000</td>
+			</tr>
+			<tr>
+				<td>2024</td>
+				<td>Memorial Day Clearance</td>
+				<td>10035</td>
+				<td>2023-05-25 00:00:00</td>
+				<td>2023-05-31 23:59:59</td>
+				<td>4000</td>
+			</tr>
+			<tr>
+				<td>2025</td>
+				<td>Independence Day Sale</td>
+				<td>10020</td>
+				<td>2023-07-01 00:00:00</td>
+				<td>2023-07-05 23:59:59</td>
+				<td>6500</td>
+			</tr>
+			<tr>
+				<td>2026</td>
+				<td>Fall Preview Event</td>
+				<td>10018</td>
+				<td>2023-08-15 00:00:00</td>
+				<td>2023-09-15 23:59:59</td>
+				<td>8000</td>
+			</tr>
+			<tr>
+				<td>2027</td>
+				<td>Labor Day Weekend Sale</td>
+				<td>10041</td>
+				<td>2023-09-01 00:00:00</td>
+				<td>2023-09-07 23:59:59</td>
+				<td>4500</td>
+			</tr>
+			<tr>
+				<td>2028</td>
+				<td>Fashion Frenzy Friday</td>
+				<td>10002</td>
+				<td>2023-11-01 00:00:00</td>
+				<td>2023-11-07 23:59:59</td>
+				<td>5500</td>
+			</tr>
+			<tr>
+				<td>2029</td>
+				<td>Black Friday Bonanza</td>
+				<td>10048</td>
+				<td>2023-11-28 00:00:00</td>
+				<td>2023-11-30 23:59:59</td>
+				<td>12000</td>
+			</tr>
+			<tr>
+				<td>2030</td>
+				<td>Cyber Monday Madness</td>
+				<td>10004</td>
+				<td>2023-11-30 00:00:00</td>
+				<td>2023-12-01 23:59:59</td>
+				<td>9000</td>
+			</tr>
+			<tr>
+				<td>2031</td>
+				<td>Holiday Gift Spectacular</td>
+				<td>10029</td>
+				<td>2023-12-10 00:00:00</td>
+				<td>2023-12-25 23:59:59</td>
+				<td>10000</td>
+			</tr>
+			<tr>
+				<td>2032</td>
+				<td>New Year, New Wardrobe</td>
+				<td>10013</td>
+				<td>2024-01-01 00:00:00</td>
+				<td>2024-01-31 23:59:59</td>
+				<td>6000</td>
+			</tr>
+			<tr>
+				<td>2033</td>
+				<td>Valentine's Day Romance</td>
+				<td>10023</td>
+				<td>2024-02-01 00:00:00</td>
+				<td>2024-02-14 23:59:59</td>
+				<td>4000</td>
+			</tr>
+			<tr>
+				<td>2034</td>
+				<td>Spring Style Revival</td>
+				<td>10026</td>
+				<td>2024-04-01 00:00:00</td>
+				<td>2024-04-30 23:59:59</td>
+				<td>6500</td>
+			</tr>
+			<tr>
+				<td>2035</td>
+				<td>Mother's Day Elegance</td>
+				<td>10011</td>
+				<td>2024-05-01 00:00:00</td>
+				<td>2024-05-10 23:59:59</td>
+				<td>4500</td>
+			</tr>
+			<tr>
+				<td>2036</td>
+				<td>Memorial Day Mega Sale</td>
+				<td>10046</td>
+				<td>2024-05-25 00:00:00</td>
+				<td>2024-05-31 23:59:59</td>
+				<td>5000</td>
+			</tr>
+			<tr>
+				<td>2037</td>
+				<td>Summer Sizzle Special</td>
+				<td>10033</td>
+				<td>2024-06-01 00:00:00</td>
+				<td>2024-08-31 23:59:59</td>
+				<td>12000</td>
+			</tr>
+			<tr>
+				<td>2038</td>
+				<td>Back-to-School Bliss</td>
+				<td>10007</td>
+				<td>2024-08-15 00:00:00</td>
+				<td>2024-09-30 23:59:59</td>
+				<td>8000</td>
+			</tr>
+			<tr>
+				<td>2039</td>
+				<td>Holiday Extravaganza</td>
+				<td>10008</td>
+				<td>2024-11-01 00:00:00</td>
+				<td>2024-12-25 23:59:59</td>
+				<td>10000</td>
+			</tr>
+			<tr>
+				<td>2040</td>
+				<td>New Year, New Style</td>
+				<td>10027</td>
+				<td>2025-01-01 00:00:00</td>
+				<td>2025-01-31 23:59:59</td>
+				<td>6000</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr>
+	<h5><a href=#top>GO BACK TO THE TOP</a></h5><br>
+	<h3 id=head><a id=questions>QUERY QUESTIONS AND ANSWERS</a></h3>
+	<p style="text-indent:5em">
+	Q1) Coquette is planning to create a digital marketing campaign to increase customer engagement. This campaign will be planned according to a predetermined customer segmentation and e-mail campaigns will be organised for each target audience. There is a new topic on the agenda for one of the target audiences and action needs to be taken urgently. Coquette needs customer IDs, names, e-mails, phone numbers, and age information in order to take urgent action for female customers older than 40 and younger than 50. Write a query that fulfils these urgent information needs of Coquette.
+	</p>
+	<p class=k style="text-indent:5em">SELECT CUST_ID, CUST_NAME, CUST_MAIL, CUST_PHONE, DATEDIFF(YEAR,CUST_BIRTHDATE,GETDATE()) AS AGE</p>
+	<p class=k style="text-indent:5em">FROM CUSTOMERS</p>
+	<p class=k style="text-indent:5em">WHERE DATEDIFF(YEAR,(CUST_BIRTHDATE),GETDATE()) < 50 AND DATEDIFF(YEAR,(CUST_BIRTHDATE),GETDATE()) > 40 AND CUST_GENDER='F'</p>
+	<table class=b>
+		<tr>
+			<th>CUST_ID</th>
+			<th>CUST_NAME</th>
+			<th>CUST_MAIL</th>
+			<th>CUST_PHONE</th>
+			<th>AGE</th>
+		</tr>
+		<tr>
+			<td>10004</td>
+			<td>Ida Hunt</td>
+			<td>ida.hunt@gmail.com</td>
+			<td>814-794-1938</td>
+			<td>44</td>
+		</tr>
+		<tr>
+			<td>10016</td>
+			<td>Sonya Ayers</td>
+			<td>sonya.ayers@icloud.com</td>
+			<td>616-799-8436</td>
+			<td>41</td>
+		</tr>
+		<tr>
+			<td>10018</td>
+			<td>Blanca Wallace</td>
+			<td>blanca.wallace@gmail.com</td>
+			<td>641-338-9911</td>
+			<td>45</td>
+		</tr>
+		<tr>
+			<td>10024</td>
+			<td>Claire Barr</td>
+			<td>claire.barr@gmail.com</td>
+			<td>765-645-7725</td>
+			<td>48</td>
+		</tr>
+		<tr>
+			<td>10030</td>
+			<td>Tiffany Shafer</td>
+			<td>tiffany.shafer@icloud.com</td>
+			<td>541-304-3755</td>
+			<td>42</td>
+		</tr>
+		<tr>
+			<td>10034</td>
+			<td>Robin Friedman</td>
+			<td>robin.friedman@yahoo.com</td>
+			<td>305-360-9661</td>
+			<td>42</td>
+		</tr>
+		<tr>
+			<td>10038</td>
+			<td>Vicky Drew</td>
+			<td>vicky.drew@gmail.com</td>
+			<td>601-537-9679</td>
+			<td>45</td>
+		</tr>
+		<tr>
+			<td>10040</td>
+			<td>Sandi Patton</td>
+			<td>sandi.patton@yahoo.com</td>
+			<td>248-210-7837</td>
+			<td>48</td>
+		</tr>
+		<tr>
+			<td>10042</td>
+			<td>Andrea Estrada</td>
+			<td>andrea.estrada@icloud.com</td>
+			<td>724-868-6519</td>
+			<td>42</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">
+	Q2) Coquette Human Resources Directorate is planning a new strategy to improve employee performance. The Directorate plans to test this new strategy by first evaluating the year-end sales performance of store managers. This program, which will soon be launched as a pilot program, will first be applied to store managers whose year-end sales exceed their sales targets. In order to holistically improve the development of store managers in different Coquette store regions, the Directorate needs some information. Write a query that lists the names of the store managers, their titles, the location and region of the store they manage, their sales and sales targets. The list should be ordered in descending order according to the managers' year-end sales.
+	</p>
+	<p class=k style="text-indent:5em">SELECT FL_NAME, TITLE, LOCATION, REGION, EMP_SALES, EMP_TARGET</p>
+	<p class=k style="text-indent:5em">FROM EMPLOYEES, STORES</p>
+	<p class=k style="text-indent:5em">WHERE EMP_ID=MANAGER AND STORE=STORE_ID AND EMP_TARGET < EMP_SALES</p>
+	<p class=k style="text-indent:5em">ORDER BY EMP_SALES DESC</p>
+	<table class=b>
+		<tr>
+			<th>FL_NAME</th>
+			<th>TITLE</th>
+			<th>LOCATION</th>
+			<th>REGION</th>
+			<th>EMP_SALES</th>
+			<th>EMP_TARGET</th>
+		</tr>
+		<tr>
+			<td>Rachel Floyd</td>
+			<td>Vice President of Sales</td>
+			<td>Phoenix</td>
+			<td>Western</td>
+			<td>2106791.54</td>
+			<td>1800000.00</td>
+		</tr>
+		<tr>
+			<td>Julian Davenport</td>
+			<td>Director of Sales Operations</td>
+			<td>Detroit</td>
+			<td>Northern</td>
+			<td>991439.62</td>
+			<td>972000.00</td>
+		</tr>
+		<tr>
+			<td>Steven Fields</td>
+			<td>Director of Marketing Strategy</td>
+			<td>Miami</td>
+			<td>Southern</td>
+			<td>920467.59</td>
+			<td>870000.00</td>
+		</tr>
+		<tr>
+			<td>Chris Houston</td>
+			<td>Brand Manager</td>
+			<td>Dallas</td>
+			<td>Southern</td>
+			<td>773464.21</td>
+			<td>735000.00</td>
+		</tr>
+		<tr>
+			<td>Josie Gilmore</td>
+			<td>Marketing Communications Manager</td>
+			<td>Chicago</td>
+			<td>Midwestern</td>
+			<td>736190.41</td>
+			<td>721000.00</td>
+		</tr>
+		<tr>
+			<td>Myla Ali</td>
+			<td>Account Executive</td>
+			<td>Boston</td>
+			<td>Eastern</td>
+			<td>697361.89</td>
+			<td>607000.00</td>
+		</tr>
+		<tr>
+			<td>Tiago Nunez</td>
+			<td>Retail Sales Supervisor</td>
+			<td>Denver</td>
+			<td>Midwestern</td>
+			<td>692430.47</td>
+			<td>679000.00</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">
+	Q3) The Coquette sales support team wants to implement a special strategy regarding high-value credit card orders and has been working on an elaborate plan for a long time. The first phase of the plan focuses on orders with an order price over $450 and where the payment method is credit card, and the customers who place the orders.  In addition, the sales support team needs some information in order to obtain meaningful and consistent data. Write a query listing the order number, customer name, product category, order price, payment method. The list should be in descending order as the priority is high value orders in line with the strategy.
+	</p>
+	<p class=k style="text-indent:5em">SELECT ORDER_NUM, CUST_NAME, CATEGORY, ORD_PRICE, PAYMENT_METHOD</p>
+	<p class=k style="text-indent:5em">FROM PRODUCTS, CUSTOMERS, ORDERS</p>
+	<p class=k style="text-indent:5em">WHERE MAN=MAN_ID AND PROD=PROD_ID AND CUST_NUM=CUST_ID AND PAYMENT_METHOD='Credit Card' AND ORD_PRICE > 450</p>
+	<p class=k style="text-indent:5em">ORDER BY ORD_PRICE DESC</p>
+	<table class=b>
+		<tr>
+			<th>ORDER_NUM</th>
+			<th>CUST_NAME</th>
+			<th>CATEGORY</th>
+			<th>ORD_PRICE</th>
+			<th>PAYMENT_METHOD</th>
+		</tr>
+		<tr>
+			<td>500060</td>
+			<td>Sandi Patton</td>
+			<td>Watch</td>
+			<td>979.86</td>
+			<td>Credit Card</td>
+		</tr>
+		<tr>
+			<td>500057</td>
+			<td>Neil Meyers</td>
+			<td>Sneakers</td>
+			<td>559.93</td>
+			<td>Credit Card</td>
+		</tr>
+		<tr>
+			<td>500042</td>
+			<td>Lee Lyons</td>
+			<td>Jeans</td>
+			<td>479.92</td>
+			<td>Credit Card</td>
+		</tr>
+	</table>
+	<hr><br>
+	
+	<p style="text-indent:5em">Q4) Coquette has started to detect abnormal changes in the sales of dark coloured clothes and wants to conduct a small market research. Having identified the main topic for this research, it has approached an international consultancy company, which is requesting some supplier (manufacturer) and product information from Coquette. The main reason for requesting supplier (manufacturer) and product information is that the main topic of the market research is a statistical analysis of the changes in black coloured clothes. For this detailed analysis, product category, manufacturer name, product size, product colour information is required. It should also be noted that not every product has specific sizes.</p>
+	<p class=k style="text-indent:5em">SELECT CATEGORY, MAN_NAME, SIZE, COLOR</p>
+	<p class=k style="text-indent:5em">FROM MANUFACTURERS LEFT OUTER JOIN PRODUCTS ON MANUF = MAN_ID</p>
+	<p class=k style="text-indent:5em">WHERE COLOR = 'Black'</p>
+	<table class=b>
+		<tr>
+			<th>CATEGORY</th>
+			<th>MAN_NAME</th>
+			<th>SIZE</th>
+			<th>COLOR</th>
+		</tr>
+		<tr>
+			<td>Jeans</td>
+			<td>Lenzing AG</td>
+			<td>32x34</td>
+			<td>Black</td>
+		</tr>
+		<tr>
+			<td>Sweatpants</td>
+			<td>Lenzing AG</td>
+			<td>M</td>
+			<td>Black</td>
+		</tr>
+		<tr>
+			<td>Sunglasses</td>
+			<td>Lenzing AG</td>
+			<td>NULL</td>
+			<td>Black</td>
+		</tr>
+		<tr>
+			<td>Dress</td>
+			<td>Marzotto Group</td>
+			<td>M</td>
+			<td>Black</td>
+		</tr>
+		<tr>
+			<td>Boots</td>
+			<td>Klopman International</td>
+			<td>7</td>
+			<td>Black</td>
+		</tr>
+		<tr>
+			<td>Sneakers</td>
+			<td>Borges International Group</td>
+			<td>9</td>
+			<td>Black</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">Q5) Write a query that generates a list of the total revenue generated from each product sold at the Chicago store, together with the respective last order date.</p>
+	<p class=k style="text-indent:5em">SELECT LOCATION, SUM(ORD_PRICE) AS TOTAL_PRICE_CHICAGO, MAX(ORDER_DATE) AS LAST_ORDER_DATE</p>
+	<p class=k style="text-indent:5em">FROM STORES, ORDERS</p>
+	<p class=k style="text-indent:5em">WHERE ORD_STORE=STORE_ID AND LOCATION='Chicago'</p>
+	<p class=k style="text-indent:5em">GROUP BY LOCATION</p>
+	<table class=b>
+		<tr>
+			<th>LOCATION</th>
+			<th>TOTAL_PRICE_CHICAGO</th>
+			<th>LAST_ORDER_DATE</th>
+		</tr>
+		<tr>
+			<td>Chicago</td>
+			<td>1887.46</td>
+			<td>2023-12-19 14:27:00</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p <p style="text-indent:5em">Q6) Write a query that returns the total quantity for each jeans order placed by considering the 'Jeans' category for the Coquette company.</p>
+	<p class=k style="text-indent:5em">SELECT CATEGORY, SUM(QUANT) AS TOTAL_QUANTITY</p>
+	<p class=k style="text-indent:5em">FROM PRODUCTS, ORDERS</p>
+	<p class=k style="text-indent:5em">WHERE MAN_ID=MAN AND PROD=PROD_ID AND CATEGORY='Jeans'</p>
+	<p class=k style="text-indent:5em">GROUP BY CATEGORY</p>
+	<table class=b>
+		<tr>
+			<th>CATEGORY</th>
+			<th>TOTAL_QUANTITY</th>
+		</tr>
+		<tr>
+			<td>Jeans</td>
+			<td>47</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">Q7) Coquette's marketing team is strategizing a targeted promotional campaign, focusing on customers who have benefited from campaigns with a discount amount between $500 and $1000. The team urgently needs customer information, including names and campaign details. Write a query that returns the each customer names, campaign names, and discount amounts in descending order, specifically for those who fall within the mentioned discount range.</p>
+	<p class=k style="text-indent:5em">SELECT CUST_NAME, CAMP_NAME, AV_PRICE</p>
+	<p class=k style="text-indent:5em">FROM CAMPAIGNS, CUSTOMERS</p>
+	<p class=k style="text-indent:5em">WHERE CUST_NUMBER = CUST_ID AND AV_PRICE > 500 AND AV_PRICE < 1000</p>
+	<p class=k style="text-indent:5em">GROUP BY CUST_NAME, CAMP_NAME, AV_PRICE</p>
+	<p class=k style="text-indent:5em">ORDER BY AV_PRICE DESC</p>
+	<table class=b>
+		<tr>
+			<th>CUST_NAME</th>
+			<th>CAMP_NAME</th>
+			<th>AV_PRICE</th>
+		</tr>
+		<tr>
+			<td>Ida Hunt</td>
+			<td>Cyber Monday Madness</td>
+			<td>900</td>
+		</tr>
+		<tr>
+			<td>Blanca Wallace</td>
+			<td>Fall Preview Event</td>
+			<td>800</td>
+		</tr>
+		<tr>
+			<td>Carole Cotton</td>
+			<td>Summer Sale 2020</td>
+			<td>800</td>
+		</tr>
+		<tr>
+			<td>Felipe Case</td>
+			<td>New Year, New Style</td>
+			<td>600</td>
+		</tr>
+		<tr>
+			<td>Taylor Cassidy</td>
+			<td>Independence Day Sale</td>
+			<td>600</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">Q8) Coquette's supply chain directors are conducting an assessment of their suppliers. They aim to obtain information on the product categories supplied by manufacturers with a delivery status of 'delivered' to customers. Additionally, they want to know the store locations where these products are supplied. Write a query that meets these requirements, listing the each manufacturer names, product categories, order statuses, and store locations? The results should be presented in alphabetical order based on the product category.</p>
+	<p class=k style="text-indent:5em">SELECT MAN_NAME, CATEGORY, ORDER_STATUS, LOCATION</p>
+	<p class=k style="text-indent:5em">FROM STORES, MANUFACTURERS, PRODUCTS, ORDERS</p>
+	<p class=k style="text-indent:5em">WHERE MANUF = MAN AND MAN_ID = MANUF AND MAN=MAN_ID AND PROD = PROD_ID AND ORD_STORE = STORE_ID AND ORDER_STATUS = 'Delivered'</p>
+	<p class=k style="text-indent:5em">GROUP BY MAN_NAME, CATEGORY, ORDER_STATUS, LOCATION</p>
+	<p class=k style="text-indent:5em">ORDER BY CATEGORY ASC</p>
+	<table class=b>
+		<tr>
+			<th>MAN_NAME</th>
+			<th>CATEGORY</th>
+			<th>ORDER_STATUS</th>
+			<th>LOCATION</th>
+		</tr>
+		<tr>
+			<td>Albini Group</td>
+			<td>Backpack</td>
+			<td>Delivered</td>
+			<td>Denver</td>
+		</tr>
+		<tr>
+			<td>Marzotto Group</td>
+			<td>Blazer</td>
+			<td>Delivered</td>
+			<td>Seattle</td>
+		</tr>
+		<tr>
+			<td>Albini Group</td>
+			<td>Gloves</td>
+			<td>Delivered</td>
+			<td>Phoenix</td>
+		</tr>
+		<tr>
+			<td>Schoeller Textil AG</td>
+			<td>Hat</td>
+			<td>Delivered</td>
+			<td>New York</td>
+		</tr>
+		<tr>
+			<td>Schoeller Textil AG</td>
+			<td>Hat</td>
+			<td>Delivered</td>
+			<td>Seattle</td>
+		  </tr>
+		  <tr>
+			<td>Albini Group</td>
+			<td>Hoodie</td>
+			<td>Delivered</td>
+			<td>Phoenix</td>
+		</tr>
+		<tr>
+			<td>Borges International Group</td>
+			<td>Jeans</td>
+			<td>Delivered</td>
+			<td>Denver</td>
+		</tr>
+		<tr>
+			<td>Schoeller Textil AG</td>
+			<td>Scarf</td>
+			<td>Delivered</td>
+			<td>Chicago</td>
+		</tr>
+		<tr>
+			<td>Lenzing AG</td>
+			<td>Sweatpants</td>
+			<td>Delivered</td>
+			<td>Miami</td>
+		</tr>
+		<tr>
+			<td>Worn Again Technologies</td>
+			<td>Tie</td>
+			<td>Delivered</td>
+			<td>Miami</td>
+		</tr>
+		<tr>
+			<td>Borges International Group</td>
+			<td>T-Shirt</td>
+			<td>Delivered</td>
+			<td>Chicago</td>
+		</tr>
+		<tr>
+			<td>Borges International Group</td>
+			<td>T-Shirt</td>
+			<td>Delivered</td>
+			<td>Detroit</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">Q9) Coquette's HR Directorate is currently evaluating the performance of store employees, focusing on those who have exceeded their sales targets by more than 15%. To aid in this assessment, they require information such as employee names, phone numbers, employee targets, actual sales, store targets, and the percentage of sales achieved relative to store targets. Write a query that returns this information for employees meeting the specified criteria.</p>
+	<p class=k style="text-indent:5em">SELECT FL_NAME, PHONE_NUM, EMP_TARGET, EMP_SALES, STORE_TARGET,(EMP_SALES/STORE_TARGET)*100 AS SALES_PERCENT</p>
+	<p class=k style="text-indent:5em">FROM STORES, EMPLOYEES</p>
+	<p class=k style="text-indent:5em">WHERE STORE_ID = STORE AND EMP_SALES>EMP_TARGET</p>
+	<p class=k style="text-indent:5em">GROUP BY FL_NAME, PHONE_NUM, EMP_TARGET, EMP_SALES, STORE_TARGET</p>
+	<p class=k style="text-indent:5em">HAVING (EMP_SALES/STORE_TARGET) * 100 > 15</p>
+	<table class=b>
+		<tr>
+			<th>FL_NAME</th>
+			<th>PHONE_NUM</th>
+			<th>EMP_TARGET</th>
+			<th>EMP_SALES</th>
+			<th>STORE_TARGET</th>
+			<th>SALES_PERCENT</th>
+		</tr>
+		<tr>
+			<td>Damien Fletcher</td>
+			<td>954-6746</td>
+			<td>1240000.00</td>
+			<td>1426987.46</td>
+			<td>8500000.00</td>
+			<td>16.78</td>
+		</tr>
+		<tr>
+			<td>Rachel Floyd</td>
+			<td>436-7550</td>
+			<td>1800000.00</td>
+			<td>2106791.54</td>
+			<td>7200000.00</td>
+			<td>29.26</td>
+		</tr>
+		<tr>
+			<td>Steven Fields</td>
+			<td>742-6395</td>
+			<td>870000.00</td>
+			<td>920467.59</td>
+			<td>6000000.00</td>
+			<td>15.34</td>
+		</tr>
+	</table>
+	<hr><br>
+	<p style="text-indent:5em">Q10) Coquette is conducting an analysis of customer purchasing behavior. They are interested in identifying products that have been ordered by at least two different customers, along with the corresponding order price and category. Write a query that returns a list of such products, including the number of distinct customers, order price, and category.</p>
+	<p class=k style="text-indent:5em">SELECT COUNT(DISTINCT CUST_NUM) AS NUM_OF_DIFFERENT_CUSTOMERS, ORD_PRICE, CATEGORY</p>
+	<p class=k style="text-indent:5em">FROM CUSTOMERS, ORDERS, PRODUCTS</p>
+	<p class=k style="text-indent:5em">WHERE CUST_ID = CUST_NUM AND PROD = PROD_ID</p>
+	<p class=k style="text-indent:5em">GROUP BY ORD_PRICE, CATEGORY</p>
+	<p class=k style="text-indent:5em">HAVING COUNT(DISTINCT CUST_NUM) >= 2</p>
+	
+	<table class=b>
+		<tr>
+			<th>NUM_OF_DIFFERENT_CUSTOMERS</th>
+			<th>ORD_PRICE</th>
+			<th>CATEGORY</th>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>449.95</td>
+			<td>Boots</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>399.95</td>
+			<td>Dress</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>159.96</td>
+			<td>Dress Shirt</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>209.94</td>
+			<td>Hat</td>
+		</tr>
+		<tr>
+			<td>3</td>
+			<td>114.95</td>
+			<td>Scarf</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>160.93</td>
+			<td>Scarf</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>559.93</td>
+			<td>Sneakers</td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>239.92</td>
+			<td>T-Shirt</td>
+		</tr>
+	</table>
+	
+	<p style="text-indent: 5em">Q11) Write the query that lists the name and campaign name of the customers who have a discount price of more than 800 dollars from each customer who benefited from each campaign with "summer" in the content.</p>
+	<p class=k style="text-indent:5em">SELECT CUST_NAME, CAMP_NAME, SUM(AV_AMOUNT) AS AMOUNT_OF_DISCOUNT</p>
+	<p class=k style="text-indent:5em">FROM CAMPAIGNS, CUSTOMERS</p>
+	<p class=k style="text-indent:5em">WHERE CUST_NUMBER = CUST_ID  AND CAMP_NAME LIKE '%Summer%'</p>
+	<p class=k style="text-indent:5em">GROUP BY CUST_NAME, CAMP_NAME</p>
+	<p class=k style="text-indent:5em">HAVING SUM(AV_AMOUNT) > 800</p>
+	
+	<table class=b>
+		<tr>
+			<th>CUST_NAME</th>
+			<th>CAMP_NAME</th>
+			<th>PRICE_OF_DISCOUNT</th>
+		</tr>
+		<tr>
+			<td>Kent Young</td>
+			<td>Summer Sizzle Special</td>
+			<td>24000</td>
+		</tr>
+	</table>
+	<hr>
+	<h5><a href=#top>GO BACK TO THE TOP</a></h5>
+	</body>
+</html>
+
